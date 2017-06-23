@@ -40,6 +40,8 @@ func init() {
 }
 
 func main() {
+	flag.Parse()
+
 	var failedToStart bool = false
 	var merr, mperr error
 	mediaDuration, merr = time.ParseDuration(mediaDurationStr)
@@ -47,7 +49,7 @@ func main() {
 		failedToStart = true
 		log.Println("media point duration could not be parsed: ", mediaDurationStr)
 	}
-	mediaPointDuration, mperr = time.ParseDuration(mediaDurationStr)
+	mediaPointDuration, mperr = time.ParseDuration(mediaPointDurationStr)
 	if nil != mperr {
 		failedToStart = true
 		log.Println("media point duration could not be parsed: ", mediaPointDurationStr)
@@ -88,8 +90,6 @@ func main() {
 			if nil == err2 {
 				display, err3 := xml.MarshalIndent(media, "", "  ")
 				if nil == err3 {
-					log.Println(media.Expires)
-					log.Println(media.Effective)
 					preamblePattern := regexp.MustCompile("^<Media xmlns=\"http://www.scte.org/schemas/224/2015\"")
 					preambleReplacement := "<Media xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns=\"http://www.scte.org/schemas/224/2015\""
 					display = preamblePattern.ReplaceAllLiteral(display, []byte(preambleReplacement))
@@ -138,9 +138,9 @@ func updatePoints(payload *MediaPayload, when time.Time) {
 	originalEndId := endPoint.Id
 
 	// make enough media points to fill the media duration
-	pointCount := int(mediaDuration.Seconds())/int(mediaPointDuration.Seconds())
+	pointCount := int(mediaDuration.Seconds()) / int(mediaPointDuration.Seconds())
 	pointList := make([]*go_Scte224.TMediaPointType, 0, pointCount)
-	for j := 0; j < (pointCount/2); j++ {
+	for j := 0; j < (pointCount / 2); j++ {
 		// intentionally dereferencing the pointer to force a copy so we clone the points as we increment the fields
 		startPoint = incrementPoint(*startPoint, originalStartId+xsdt.AnyURI("/"+strconv.Itoa(j)))
 		endPoint = incrementPoint(*endPoint, originalEndId+xsdt.AnyURI("/"+strconv.Itoa(j)))
