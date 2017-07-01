@@ -137,8 +137,8 @@ func updatePoints(payload *MediaPayload, when time.Time) {
 	endPoint := resetPointTimes(payload.MediaPoints[1], updatedTimeStamp, expiresTimeStamp)
 	originalEndId := endPoint.Id
 
-	// make enough media points to fill the media duration
-	pointCount := int(mediaDuration.Seconds()) / int(mediaPointDuration.Seconds())
+	// make enough media points to fill the media duration with both a waxon and a waxoff point
+	pointCount := 2 * int(mediaDuration.Seconds()) / int(mediaPointDuration.Seconds())
 	pointList := make([]*go_Scte224.TMediaPointType, 0, pointCount)
 	for j := 0; j < (pointCount / 2); j++ {
 		// intentionally dereferencing the pointer to force a copy so we clone the points as we increment the fields

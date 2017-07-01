@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Media xmlns:audience="urn:scte:224:audience" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:action="urn:scte:224:action" xmlns="http://www.scte.org/schemas/224/2015" id="superflaco.com/media/CSNPH" description="SuperFlaco Station" lastUpdated="2017-06-20T20:00:00.000Z" source="CSNPH">
     <MediaPoint id="superflaco.com/media/CSNPH/point/waxon" description="Staggered Start Media Points" lastUpdated="2017-06-20T20:00:00.000Z" effective="2017-06-20T20:00:00.000Z" expires="2017-07-04T23:34:22.387Z" source="CSNPH">
-        <Apply>
+        <Apply duration="PT20M">
             <Policy xlink:href="superflaco.com/CSNPH/policy/toggle"/>
         </Apply>
         <MatchSignal match="ANY">
-            <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=1]/SegmentationUpid[@segmentationUpidType=1 and text()=1234567890]</Assert>
-            <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=16]/SegmentationUpid[@segmentationUpidType=1 and text()=1234567890]</Assert>
+            <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=1]</Assert>
+            <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=16]</Assert>
         </MatchSignal>
     </MediaPoint>
     <MediaPoint id="superflaco.com/media/CNSPH/point/waxoff" description="Staggered End Media Points" lastUpdated="2017-06-20T20:00:00.000Z" effective="2017-06-20T20:00:00.000Z" expires="2017-07-04T23:34:22.387Z" source="CSNPH">
@@ -14,7 +14,7 @@
             <Policy xlink:href="superflaco.com/CSNPH/policy/toggle"/>
         </Remove>
         <MatchSignal match="ANY">
-            <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=17]/SegmentationUpid[@segmentationUpidType=1 and text()=1234567890]</Assert>
+            <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=17]</Assert>
         </MatchSignal>
     </MediaPoint>
 </Media>
