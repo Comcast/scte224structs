@@ -1,7 +1,7 @@
 package scte224DSClient
 
 import (
-	"github.comcast.com/svp/plclient.git"
+	"code.comcast.com/svp/plclient"
 	"time"
 	"net/http"
 	"strings"

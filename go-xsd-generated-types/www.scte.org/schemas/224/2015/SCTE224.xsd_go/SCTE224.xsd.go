@@ -6,8 +6,8 @@ package go_Scte224
 
 import (
 	xsdt "github.com/metaleap/go-xsd/types"
-	xlink "github.comcast.com/jcolwe200/scte224.git/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
-	xml "github.comcast.com/jcolwe200/scte224.git/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
+	xlink "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
+	xml "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
 )
 
 type TxsdMatchableMatch xsdt.Token

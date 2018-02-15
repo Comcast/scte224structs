@@ -24,7 +24,7 @@ package go_Xlink
 
 import (
 	xsdt "github.com/metaleap/go-xsd/types"
-	xml "github.comcast.com/jcolwe200/scte224.git/go-xsd-generated-types/www.w3.org/2001/xml.xsd_go"
+	xml "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/xml.xsd_go"
 )
 
 type TtypeType xsdt.Token
