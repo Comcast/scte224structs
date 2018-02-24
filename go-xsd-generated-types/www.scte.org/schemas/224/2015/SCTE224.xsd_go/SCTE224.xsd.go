@@ -7,8 +7,30 @@ package go_Scte224
 import (
 	xsdt "github.com/metaleap/go-xsd/types"
 	xlink "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
-	xml "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
+	xml_xsd "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
+	"encoding/xml"
 )
+
+type MediaPayload struct {
+	XMLName xml.Name
+	TMediaType
+}
+
+type AudiencePayload struct {
+
+	XMLName xml.Name
+	TAudienceType
+}
+
+type PolicyPayload struct {
+	XMLName xml.Name
+	TPolicyType
+}
+
+type ViewingPolicyPayload struct {
+	XMLName xml.Name
+	TViewingPolicyType
+}
 
 type TxsdMatchableMatch xsdt.Token
 
@@ -167,7 +189,7 @@ type TIdentifiableType struct {
 
 	XsdGoPkgHasAttr_LastUpdated_XsdtDateTime_
 
-	xml.XsdGoPkgHasAttr_Base
+	xml_xsd.XsdGoPkgHasAttr_Base
 
 	//	May be used to express additional identifiers (e.g. EIDR, Ad-ID)
 	XsdGoPkgHasElems_AltIDsequenceIdentifiableTypeschema_AltID_XsdtAnyURI_

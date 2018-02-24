@@ -98,8 +98,8 @@ func main() {
 					output := string(display)
 
 					log.Println(output)
-					scte224DSClient.SetCredentials(username, password, scte224DSClient.Prod)
-					scte224DSClient.PushSCTEData(account, sourceGUID, output)
+					client := scte224DSClient.SetCredentials(username, password, scte224DSClient.Prod)
+					client.PushSCTEData(account, sourceGUID, output)
 				} else {
 					log.Println(err3)
 				}
