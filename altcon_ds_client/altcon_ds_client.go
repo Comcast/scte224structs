@@ -48,8 +48,12 @@ type AltContentClient struct {
 
 func milliTime(millis int64) time.Time {
 	sec := millis / 1000
-	nsec := millis % 1000 * int64(time.Millisecond)
+	nsec := (millis % 1000) * (int64(time.Millisecond)/int64(time.Nanosecond))
 	return time.Unix(sec, nsec)
+}
+
+func timeToMillis(tempo time.Time) int64 {
+	return tempo.UnixNano() / (int64(time.Millisecond)/int64(time.Nanosecond))
 }
 
 func SetCredentials(user string, pw string, urls Service_urls) AltContentClient {
@@ -119,8 +123,8 @@ func (client AltContentClient) PollForNotifications(account, client_id string, g
 			if nil == err {
 				var response *http.Response
 				response, err = http.DefaultClient.Do(get)
-				defer response.Body.Close()
 				if nil == err {
+					defer response.Body.Close()
 					if response.StatusCode != 200 {
 						var buf bytes.Buffer
 						buf.ReadFrom(response.Body)
@@ -154,6 +158,23 @@ func (client AltContentClient) PollForNotifications(account, client_id string, g
 	}
 }
 
+func (client AltContentClient) GetRecentlyUpdated(account string, updatedSince time.Time) (updatedMap map[TypedGuid]time.Time, err error) {
+
+	updatedMap = make(map[TypedGuid]time.Time)
+	err = client.queryUpdatedSince(account, updatedMap, AUDIENCE, updatedSince)
+	if nil == err {
+		err = client.queryUpdatedSince(account, updatedMap, VIEWING_POLICY, updatedSince)
+		if nil == err {
+			err = client.queryUpdatedSince(account, updatedMap, POLICY, updatedSince)
+			if nil == err {
+				err = client.queryUpdatedSince(account, updatedMap, MEDIA_SOURCE, updatedSince)
+			}
+		}
+	}
+	return
+}
+
+
 func (client AltContentClient) GetUpdatedTimestamps(account string, guids ...TypedGuid) (updatedMap map[TypedGuid]time.Time, err error) {
 
 	var mediaGuids, policyGuids, viewingPolicyGuids, audienceGuids []string
@@ -183,6 +204,37 @@ func (client AltContentClient) GetUpdatedTimestamps(account string, guids ...Typ
 	return
 }
 
+func (client AltContentClient) queryUpdatedSince(account string, updatedMap map[TypedGuid]time.Time, dt DataType, updatedSince time.Time) (err error) {
+		var token *plclient.IdentityToken
+		token, err = client.GetToken()
+		if nil == err {
+			get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0&form=cjson&byUpdated="+strconv.Itoa(int(timeToMillis(updatedSince)))+"~", nil)
+			get.Header.Add("Authorization", token.EncodeBasicAuth(account))
+			if nil == err {
+				var response *http.Response
+				response, err = http.DefaultClient.Do(get)
+				if nil == err {
+					defer response.Body.Close()
+					if response.StatusCode != 200 {
+						errMsg := fmt.Sprintf("Got a %v from the DS trying to GET recently updated %v items", response.Status, dt)
+						log.Println(errMsg)
+						err = errors.New(errMsg)
+					} else {
+						updatePayload := &DataServiceUpdatedResponse{}
+						err = json.NewDecoder(response.Body).Decode(updatePayload)
+						if nil == err {
+							for _, entry := range updatePayload.Entries {
+								updatedMap[TypedGuid{Guid: entry.Guid, Type: dt}] = milliTime(entry.Updated)
+							}
+						}
+
+				}
+			}
+		}
+	}
+	return
+}
+
 func (client AltContentClient) queryForUpdated(account string, updatedMap map[TypedGuid]time.Time, dt DataType, guids []string) (err error) {
 	if len(guids) > 0 {
 		var token *plclient.IdentityToken
@@ -193,8 +245,8 @@ func (client AltContentClient) queryForUpdated(account string, updatedMap map[Ty
 			if nil == err {
 				var response *http.Response
 				response, err = http.DefaultClient.Do(get)
-				defer response.Body.Close()
 				if nil == err {
+					defer response.Body.Close()
 					if response.StatusCode != 200 {
 						errMsg := fmt.Sprintf("Got a %v from the DS trying to GET updated times for: %v", response.Status, guids)
 						log.Println(errMsg)
@@ -224,8 +276,8 @@ func (client AltContentClient) GetSCTEData(account, guid string) (buf *bytes.Buf
 		if nil == err {
 			var response *http.Response
 			response, err = http.DefaultClient.Do(get)
-			defer response.Body.Close()
 			if nil == err {
+				defer response.Body.Close()
 				buf = &bytes.Buffer{}
 				buf.ReadFrom(response.Body)
 				if response.StatusCode != 200 {
@@ -248,8 +300,8 @@ func (client AltContentClient) PushSCTEData(account string, guid string, content
 		put.Header.Add("Authorization", token.EncodeBasicAuth(account))
 		if nil == err {
 			response, err := http.DefaultClient.Do(put)
-			defer response.Body.Close()
 			if nil == err {
+				defer response.Body.Close()
 				if response.StatusCode != 200 && response.StatusCode != 204 {
 					var buf bytes.Buffer
 					buf.ReadFrom(response.Body)
