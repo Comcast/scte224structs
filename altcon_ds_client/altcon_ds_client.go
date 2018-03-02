@@ -41,6 +41,7 @@ var tokenDate time.Time = time.Now().Add(time.Duration(-2) * time.Hour)
 var username string
 var password string
 var env Service_urls
+var logger *log.Logger
 
 type AltContentClient struct {
 	*plclient.IdentityClient
@@ -154,7 +155,7 @@ func (client AltContentClient) PollForNotifications(account, client_id string, g
 		}
 	}
 	if nil != err {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
 
@@ -217,7 +218,7 @@ func (client AltContentClient) queryUpdatedSince(account string, updatedMap map[
 					defer response.Body.Close()
 					if response.StatusCode != 200 {
 						errMsg := fmt.Sprintf("Got a %v from the DS trying to GET recently updated %v items", response.Status, dt)
-						log.Println(errMsg)
+						logger.Println(errMsg)
 						err = errors.New(errMsg)
 					} else {
 						updatePayload := &DataServiceUpdatedResponse{}
@@ -249,7 +250,7 @@ func (client AltContentClient) queryForUpdated(account string, updatedMap map[Ty
 					defer response.Body.Close()
 					if response.StatusCode != 200 {
 						errMsg := fmt.Sprintf("Got a %v from the DS trying to GET updated times for: %v", response.Status, guids)
-						log.Println(errMsg)
+						logger.Println(errMsg)
 						err = errors.New(errMsg)
 					} else {
 						updatePayload := &DataServiceUpdatedResponse{}
@@ -282,7 +283,7 @@ func (client AltContentClient) GetSCTEData(account, guid string) (buf *bytes.Buf
 				buf.ReadFrom(response.Body)
 				if response.StatusCode != 200 {
 					errMsg := fmt.Sprintf("Got a %v from the DS trying to GET %v: %v", response.Status, guid, buf.String())
-					log.Println(errMsg)
+					logger.Println(errMsg)
 					err = errors.New(errMsg)
 				}
 			}
@@ -306,7 +307,7 @@ func (client AltContentClient) PushSCTEData(account string, guid string, content
 					var buf bytes.Buffer
 					buf.ReadFrom(response.Body)
 					errMsg := fmt.Sprintf("Got a %v from the DS trying to PUT %v: %v", response.Status, guid, buf.String())
-					log.Println(errMsg)
+					logger.Println(errMsg)
 					err = errors.New(errMsg)
 				}
 			}

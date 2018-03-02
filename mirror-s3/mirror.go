@@ -6,21 +6,25 @@ import (
 	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2015/SCTE224.xsd_go"
 	"encoding/xml"
 	"flag"
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"io"
 	"log"
+	"os"
 	"time"
 )
 
 var mpx_user, mpx_password, account, bucket, base_path string
+var lastPoll time.Time
 var notification int
 var s3svc *s3.S3
 
+var logger *log.Logger
+
 func main() {
+	logger = log.New(os.Stdout, "S3 Mirror", log.LstdFlags|log.Lmicroseconds|log.LUTC|log.Lshortfile)
 	flag.Parse()
 	if "" == mpx_user || "" == mpx_password || "" == bucket {
 		flag.Usage()
@@ -29,10 +33,11 @@ func main() {
 		guid_spew := make(chan scte224DSClient.TypedGuid)
 		client := scte224DSClient.SetCredentials(mpx_user, mpx_password, scte224DSClient.Prod)
 		go client.PollForNotifications(account, "Mirror", guid_spew, notification)
+		go scanForMissedNotifications(client)
 		for {
 			select {
 			case tg := <-guid_spew:
-				fmt.Println("received notification for ", tg)
+				logger.Println("received notification for ", tg)
 				go mirrorGuid(client, tg)
 			}
 		}
@@ -48,6 +53,24 @@ func init() {
 	flag.StringVar(&bucket, "b", "", "S3 Bucket")
 }
 
+func scanForMissedNotifications(client scte224DSClient.AltContentClient) {
+	for {
+		// just to ensure a bit of overlap in polling subtracting a second from when we claim this poll was
+		thisPoll := time.Now().Add(-time.Second)
+		if !lastPoll.IsZero() {
+			recentlyUpdated, err := client.GetRecentlyUpdated(account, lastPoll)
+			if nil == err {
+				for guid, updated := range recentlyUpdated {
+					logger.Println("Attempting to re mirror ", guid, updated.Format(time.RFC3339))
+					go mirrorGuidIfNewer(client, guid, updated)
+				}
+			}
+		}
+		lastPoll = thisPoll
+		time.Sleep(time.Duration(5) * time.Minute)
+	}
+}
+
 func mirrorIfNewer(client scte224DSClient.AltContentClient, tgs ...scte224DSClient.TypedGuid) {
 	updatedMap, err := client.GetUpdatedTimestamps(account, tgs...)
 	if nil == err {
@@ -55,7 +78,7 @@ func mirrorIfNewer(client scte224DSClient.AltContentClient, tgs ...scte224DSClie
 			go mirrorGuidIfNewer(client, guid, updated)
 		}
 	} else {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
 
@@ -75,11 +98,11 @@ func mirrorGuidIfNewer(client scte224DSClient.AltContentClient, tg scte224DSClie
 			case "NotFound":
 				mirrorGuid(client, tg)
 			default:
-				log.Println(aerr.Code(), aerr.Message(), aerr.Error())
+				logger.Println(aerr.Code(), aerr.Message(), aerr.Error())
 			}
 		} else {
 			// log if the error isn't the expected precondition failed error
-			log.Println(err)
+			logger.Println(err)
 		}
 	}
 }
@@ -139,11 +162,11 @@ func mirrorAudience(client scte224DSClient.AltContentClient, guid string) {
 			}
 			nestedAudiences := flattenSetToSlice(nestedAudienceMap)
 			mirrorIfNewer(client, flattenSetToTypedGuidSlice(nestedAudienceMap, scte224DSClient.AUDIENCE)...)
-			log.Println("Found Audience: ", audience.Id.String(), " containing Nested Audiences: ", nestedAudiences)
+			logger.Println("Found Audience: ", audience.Id.String(), " containing Nested Audiences: ", nestedAudiences)
 			stashInS3(audience.Id.String(), bytes.NewReader(scteBytes))
 		}
 	} else {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
 
@@ -159,11 +182,11 @@ func mirrorViewingPolicy(client scte224DSClient.AltContentClient, guid string) {
 				href = viewingPolicy.Audience.Id.String()
 			}
 			mirrorIfNewer(client, scte224DSClient.TypedGuid{Type: scte224DSClient.AUDIENCE, Guid: href})
-			log.Println("Found Policy: ", viewingPolicy.Id.String(), " containing Audience: ", href)
+			logger.Println("Found Policy: ", viewingPolicy.Id.String(), " containing Audience: ", href)
 			stashInS3(viewingPolicy.Id.String(), bytes.NewReader(scteBytes))
 		}
 	} else {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
 
@@ -178,7 +201,7 @@ func mirrorPolicy(client scte224DSClient.AltContentClient, guid string) {
 			stashInS3(policy.Id.String(), bytes.NewReader(scteBytes))
 		}
 	} else {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
 
@@ -197,7 +220,7 @@ func scanForViewingPolicies(client scte224DSClient.AltContentClient, policy *go_
 		}
 	}
 	vps := flattenSetToSlice(viewingPoliciesMap)
-	log.Println("Found Policy: ", policy.Id.String(), " containing Viewing Policies: ", vps)
+	logger.Println("Found Policy: ", policy.Id.String(), " containing Viewing Policies: ", vps)
 	mirrorIfNewer(client, flattenSetToTypedGuidSlice(viewingPoliciesMap, scte224DSClient.VIEWING_POLICY)...)
 }
 
@@ -212,7 +235,7 @@ func mirrorMedia(client scte224DSClient.AltContentClient, guid string) {
 			stashInS3(media.Id.String(), bytes.NewReader(scteBytes))
 		}
 	} else {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
 
@@ -243,7 +266,7 @@ func scanForPolicies(client scte224DSClient.AltContentClient, payload *go_Scte22
 		}
 	}
 	policies := flattenSetToSlice(policiesMap)
-	log.Println("Found media: ", payload.Id.String(), " containing Policies: ", policies)
+	logger.Println("Found media: ", payload.Id.String(), " containing Policies: ", policies)
 	mirrorIfNewer(client, flattenSetToTypedGuidSlice(policiesMap, scte224DSClient.POLICY)...)
 }
 
@@ -260,9 +283,9 @@ func stashInS3(path string, reader io.ReadSeeker) {
 	input := s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String(path), Body: reader, ACL: aws.String("public-read"), ContentType: aws.String("application/xml; charset=UTF-8"), CacheControl: aws.String("public proxy-revalidate s-maxage=60")}
 	putResp, err := s3svc.PutObject(&input)
 	if nil == err {
-		log.Println("Mirrored ", path, " to S3")
-		log.Println(putResp)
+		logger.Println("Mirrored ", path, " to S3")
+		logger.Println(putResp)
 	} else {
-		log.Println(err)
+		logger.Println(err)
 	}
 }
