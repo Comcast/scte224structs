@@ -34,7 +34,7 @@ var Prod = Service_urls{Altcontent: "https://data.altcontent.tv.theplatform.com/
 
 var Stage = Service_urls{Altcontent: "http://data.altcontent.tv.sandbox.theplatform.com/altcontent", AltcontentRO: "https://read.data.altcontent.tv.sandbox.theplatform.com/altcontent", Idm: "http://stg-admin.identity.auth.theplatform.com/idm"}
 
-const NOTIFY_PATH = "/notify?block=true&fields=true&clientId=%v&schema=1.1.0&filter={MediaSource},{Audience},{Policy},{ViewingPolicy}"
+const NOTIFY_PATH = "/notify?block=true&fields=true&clientId=%v&schema=1.1.0&filter={MediaSource|put,post},{Audience|put,post},{Policy|put,post},{ViewingPolicy|put,post}"
 
 var token *plclient.IdentityToken
 var tokenDate time.Time = time.Now().Add(time.Duration(-2) * time.Hour)
