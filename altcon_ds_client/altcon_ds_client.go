@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"os"
 )
 
 type DataServiceUpdatedResponse struct {
@@ -58,6 +59,7 @@ func timeToMillis(tempo time.Time) int64 {
 }
 
 func SetCredentials(user string, pw string, urls Service_urls) AltContentClient {
+	logger = log.New(os.Stdout, "AltConDS Client", log.LstdFlags|log.Lmicroseconds|log.LUTC|log.Lshortfile)
 	username = user
 	password = pw
 	env = urls
