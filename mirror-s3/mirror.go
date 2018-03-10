@@ -14,12 +14,20 @@ import (
 	"log"
 	"os"
 	"time"
+	"code.comcast.com/jcolwe200/decider/lookup"
+	"encoding/gob"
 )
+
+const TEXT_CONTENT = "text/plain; charset=UTF-8"
+const XML_CONTENT  = "application/xml; charset=UTF-8"
+const BINARY_CONTENT  = "application/octet-stream"
 
 var mpx_user, mpx_password, account, bucket, base_path string
 var lastPoll time.Time
 var notification int
 var s3svc *s3.S3
+// maps sources to a set of guids
+var sourceMap = make(map[string]map[string]bool)
 
 var logger *log.Logger
 
@@ -163,7 +171,7 @@ func mirrorAudience(client scte224DSClient.AltContentClient, guid string) {
 			nestedAudiences := flattenSetToSlice(nestedAudienceMap)
 			mirrorIfNewer(client, flattenSetToTypedGuidSlice(nestedAudienceMap, scte224DSClient.AUDIENCE)...)
 			logger.Println("Found Audience: ", audience.Id.String(), " containing Nested Audiences: ", nestedAudiences)
-			stashInS3(audience.Id.String(), bytes.NewReader(scteBytes))
+			stashInS3(audience.Id.String(), bytes.NewReader(scteBytes), XML_CONTENT)
 		}
 	} else {
 		logger.Println(err)
@@ -183,7 +191,7 @@ func mirrorViewingPolicy(client scte224DSClient.AltContentClient, guid string) {
 			}
 			mirrorIfNewer(client, scte224DSClient.TypedGuid{Type: scte224DSClient.AUDIENCE, Guid: href})
 			logger.Println("Found Policy: ", viewingPolicy.Id.String(), " containing Audience: ", href)
-			stashInS3(viewingPolicy.Id.String(), bytes.NewReader(scteBytes))
+			stashInS3(viewingPolicy.Id.String(), bytes.NewReader(scteBytes), XML_CONTENT)
 		}
 	} else {
 		logger.Println(err)
@@ -198,7 +206,7 @@ func mirrorPolicy(client scte224DSClient.AltContentClient, guid string) {
 		err = xml.NewDecoder(scteData).Decode(policy)
 		if nil == err {
 			scanForViewingPolicies(client, policy)
-			stashInS3(policy.Id.String(), bytes.NewReader(scteBytes))
+			stashInS3(policy.Id.String(), bytes.NewReader(scteBytes), XML_CONTENT)
 		}
 	} else {
 		logger.Println(err)
@@ -232,10 +240,40 @@ func mirrorMedia(client scte224DSClient.AltContentClient, guid string) {
 		err = xml.NewDecoder(scteData).Decode(media)
 		if nil == err {
 			scanForPolicies(client, media)
-			stashInS3(media.Id.String(), bytes.NewReader(scteBytes))
+			stashInS3(media.Id.String(), bytes.NewReader(scteBytes), XML_CONTENT)
+			treeLookup := lookup.CreateTreeLookup(media)
+			var buf bytes.Buffer
+			err := gob.NewEncoder(&buf).Encode(treeLookup)
+			if nil == err {
+				stashInS3("TreeLookup/"+ media.Id.String(), bytes.NewReader(buf.Bytes()), BINARY_CONTENT)
+			} else {
+				logger.Println(err)
+			}
+			updateSource(media.Source.String(), media.Id.String())
+
 		}
 	} else {
 		logger.Println(err)
+	}
+}
+
+func updateSource(source, guid string)  {
+	existingSources,ok := sourceMap[source]
+	if ok {
+		_,guidFound := existingSources[guid]
+		if !guidFound {
+			// didn't find this guid so add it and mirror to S3
+			allGuids := guid
+			for key,_ := range existingSources {
+				allGuids =  allGuids + key + "\n"
+			}
+			existingSources[guid] = true
+			stashInS3("Sources/"+ source, bytes.NewReader([]byte(allGuids+"\n")),TEXT_CONTENT)
+		}
+	} else {
+		// no source existed so create it and send to S3
+		sourceMap[source] = map[string]bool{guid:true}
+		stashInS3("Sources/"+ source, bytes.NewReader([]byte(guid+"\n")),TEXT_CONTENT)
 	}
 }
 
@@ -278,9 +316,9 @@ func initS3() {
 	s3svc = s3.New(sess)
 }
 
-func stashInS3(path string, reader io.ReadSeeker) {
+func stashInS3(path string, reader io.ReadSeeker, contentType string) {
 
-	input := s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String(path), Body: reader, ACL: aws.String("public-read"), ContentType: aws.String("application/xml; charset=UTF-8"), CacheControl: aws.String("public proxy-revalidate s-maxage=60")}
+	input := s3.PutObjectInput{Bucket: aws.String(bucket), Key: aws.String(path), Body: reader, ACL: aws.String("public-read"), ContentType: aws.String(contentType), CacheControl: aws.String("public proxy-revalidate s-maxage=60")}
 	putResp, err := s3svc.PutObject(&input)
 	if nil == err {
 		logger.Println("Mirrored ", path, " to S3")

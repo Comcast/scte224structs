@@ -9,6 +9,8 @@ import (
 	xlink "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
 	xml_xsd "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
 	"encoding/xml"
+	"time"
+	"log"
 )
 
 type MediaPayload struct {
@@ -65,12 +67,24 @@ type XsdGoPkgHasAtts_Matchable struct {
 	XsdGoPkgHasAttr_Match_TxsdMatchableMatch_All
 }
 
+type ConvertibleDateTime xsdt.DateTime
+
+const SCTE_TIME_FMT = "2006-01-02T15:04:05.999Z"
+
+func (dt ConvertibleDateTime) Time() time.Time {
+	tiempo, err := time.ParseInLocation(SCTE_TIME_FMT, string(dt), time.UTC)
+	if nil != err {
+		log.Panic(err)
+	}
+	return tiempo
+}
+
 type XsdGoPkgHasAttr_Effective_XsdtDateTime_ struct {
-	Effective xsdt.DateTime `xml:"effective,attr,omitempty"`
+	Effective ConvertibleDateTime `xml:"effective,attr,omitempty"`
 }
 
 type XsdGoPkgHasAttr_Expires_XsdtDateTime_ struct {
-	Expires xsdt.DateTime `xml:"expires,attr,omitempty"`
+	Expires ConvertibleDateTime `xml:"expires,attr,omitempty"`
 }
 
 type XsdGoPkgHasAtts_Eligible struct {
@@ -179,7 +193,7 @@ type XsdGoPkgHasAttr_Description_XsdtNormalizedString_ struct {
 }
 
 type XsdGoPkgHasAttr_LastUpdated_XsdtDateTime_ struct {
-	LastUpdated xsdt.DateTime `xml:"lastUpdated,attr,omitempty"`
+	LastUpdated ConvertibleDateTime `xml:"lastUpdated,attr,omitempty"`
 }
 
 type TIdentifiableType struct {
@@ -842,6 +856,10 @@ type TMediaPointType struct {
 	XsdGoPkgHasElems_ApplysequenceextensioncomplexContentMediaPointTypeschema_Apply_TApplyType_
 
 	XsdGoPkgHasElem_MatchSignalsequenceextensioncomplexContentMediaPointTypeschema_MatchSignal_TMatchSignalType_
+}
+
+func (me *TMediaPointType) String() string {
+	return me.Id.String()
 }
 
 //	If the WalkHandlers.TMediaPointType function is not nil (ie. was set by outside code), calls it with this TMediaPointType instance as the single argument. Then calls the Walk() method on 4/8 embed(s) and 0/0 field(s) belonging to this TMediaPointType instance.

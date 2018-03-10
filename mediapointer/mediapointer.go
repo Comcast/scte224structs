@@ -112,8 +112,8 @@ func main() {
 	}
 }
 
-func formatXMLTime(when time.Time) xsdt.DateTime {
-	return xsdt.DateTime(when.Format(SCTE_TIME_FMT))
+func formatXMLTime(when time.Time) go_Scte224.ConvertibleDateTime {
+	return go_Scte224.ConvertibleDateTime(when.Format(SCTE_TIME_FMT))
 }
 
 func updateMedia(payload *MediaPayload, when time.Time) {
@@ -149,25 +149,17 @@ func updatePoints(payload *MediaPayload, when time.Time) {
 	payload.MediaPoints = pointList
 }
 
-func resetPointTimes(point *go_Scte224.TMediaPointType, effective xsdt.DateTime, expires xsdt.DateTime) *go_Scte224.TMediaPointType {
+func resetPointTimes(point *go_Scte224.TMediaPointType, effective go_Scte224.ConvertibleDateTime, expires go_Scte224.ConvertibleDateTime) *go_Scte224.TMediaPointType {
 	point.LastUpdated = effective
 	point.Effective = effective
 	point.Expires = expires
 	return point
 }
 
-func convertTime(dt xsdt.DateTime) time.Time {
-	tiempo, err := time.ParseInLocation(SCTE_TIME_FMT, dt.String(), time.UTC)
-	if nil != err {
-		log.Panic(err)
-	}
-	return tiempo
-}
-
 func incrementPoint(point go_Scte224.TMediaPointType, uri xsdt.AnyURI) *go_Scte224.TMediaPointType {
 	// passing in the object is intended to force it to create a new copy which gets modified
-	point.Effective = formatXMLTime(convertTime(point.Effective).Add(mediaPointDuration))
-	point.Expires = formatXMLTime(convertTime(point.Expires).Add(mediaPointDuration))
+	point.Effective = formatXMLTime(point.Effective.Time().Add(mediaPointDuration))
+	point.Expires = formatXMLTime(point.Expires.Time().Add(mediaPointDuration))
 	point.Id = uri
 	return &point
 }
