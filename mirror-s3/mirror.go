@@ -15,7 +15,6 @@ import (
 	"os"
 	"time"
 	"code.comcast.com/jcolwe200/decider/lookup"
-	"encoding/gob"
 )
 
 const TEXT_CONTENT = "text/plain; charset=UTF-8"
@@ -243,7 +242,7 @@ func mirrorMedia(client scte224DSClient.AltContentClient, guid string) {
 			stashInS3(media.Id.String(), bytes.NewReader(scteBytes), XML_CONTENT)
 			treeLookup := lookup.CreateTreeLookup(media)
 			var buf bytes.Buffer
-			err := gob.NewEncoder(&buf).Encode(treeLookup)
+			err := treeLookup.Serialize(&buf)
 			if nil == err {
 				stashInS3("TreeLookup/"+ media.Id.String(), bytes.NewReader(buf.Bytes()), BINARY_CONTENT)
 			} else {
@@ -263,9 +262,9 @@ func updateSource(source, guid string)  {
 		_,guidFound := existingSources[guid]
 		if !guidFound {
 			// didn't find this guid so add it and mirror to S3
-			allGuids := guid
-			for key,_ := range existingSources {
-				allGuids =  allGuids + key + "\n"
+			allGuids := guid + "\n"
+			for key := range existingSources {
+				allGuids = allGuids + key + "\n"
 			}
 			existingSources[guid] = true
 			stashInS3("Sources/"+ source, bytes.NewReader([]byte(allGuids+"\n")),TEXT_CONTENT)
