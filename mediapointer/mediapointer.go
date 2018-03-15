@@ -11,11 +11,12 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2018/SCTE224-2018.xsd_go"
 )
 
 type MediaPayload struct {
 	XMLName xml.Name
-	go_Scte224.TMediaType
+	go_Scte2242018.TMediaType
 }
 
 var scte224Template string
@@ -112,8 +113,8 @@ func main() {
 	}
 }
 
-func formatXMLTime(when time.Time) go_Scte224.ConvertibleDateTime {
-	return go_Scte224.ConvertibleDateTime(when.Format(SCTE_TIME_FMT))
+func formatXMLTime(when time.Time) go_Scte2242018.ConvertibleDateTime {
+	return go_Scte2242018.ConvertibleDateTime(when.Format(SCTE_TIME_FMT))
 }
 
 func updateMedia(payload *MediaPayload, when time.Time) {
@@ -139,7 +140,7 @@ func updatePoints(payload *MediaPayload, when time.Time) {
 
 	// make enough media points to fill the media duration with both a waxon and a waxoff point
 	pointCount := 2 * int(mediaDuration.Seconds()) / int(mediaPointDuration.Seconds())
-	pointList := make([]*go_Scte224.TMediaPointType, 0, pointCount)
+	pointList := make([]*go_Scte2242018.TMediaPointType, 0, pointCount)
 	for j := 0; j < (pointCount / 2); j++ {
 		// intentionally dereferencing the pointer to force a copy so we clone the points as we increment the fields
 		startPoint = incrementPoint(*startPoint, originalStartId+xsdt.AnyURI("/"+strconv.Itoa(j)))
@@ -149,14 +150,14 @@ func updatePoints(payload *MediaPayload, when time.Time) {
 	payload.MediaPoints = pointList
 }
 
-func resetPointTimes(point *go_Scte224.TMediaPointType, effective go_Scte224.ConvertibleDateTime, expires go_Scte224.ConvertibleDateTime) *go_Scte224.TMediaPointType {
+func resetPointTimes(point *go_Scte2242018.TMediaPointType, effective go_Scte2242018.ConvertibleDateTime, expires go_Scte2242018.ConvertibleDateTime) *go_Scte2242018.TMediaPointType {
 	point.LastUpdated = effective
 	point.Effective = effective
 	point.Expires = expires
 	return point
 }
 
-func incrementPoint(point go_Scte224.TMediaPointType, uri xsdt.AnyURI) *go_Scte224.TMediaPointType {
+func incrementPoint(point go_Scte2242018.TMediaPointType, uri xsdt.AnyURI) *go_Scte2242018.TMediaPointType {
 	// passing in the object is intended to force it to create a new copy which gets modified
 	point.Effective = formatXMLTime(point.Effective.Time().Add(mediaPointDuration))
 	point.Expires = formatXMLTime(point.Expires.Time().Add(mediaPointDuration))
