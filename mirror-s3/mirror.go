@@ -2,8 +2,9 @@ package main
 
 import (
 	"bytes"
+	"code.comcast.com/jcolwe200/decider/lookup"
 	"code.comcast.com/jcolwe200/scte224/altcon_ds_client"
-	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2015/SCTE224.xsd_go"
+	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2018/SCTE224-2018.xsd_go"
 	"encoding/xml"
 	"flag"
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,18 +15,17 @@ import (
 	"log"
 	"os"
 	"time"
-	"code.comcast.com/jcolwe200/decider/lookup"
-	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2018/SCTE224-2018.xsd_go"
 )
 
 const TEXT_CONTENT = "text/plain; charset=UTF-8"
-const XML_CONTENT  = "application/xml; charset=UTF-8"
-const BINARY_CONTENT  = "application/octet-stream"
+const XML_CONTENT = "application/xml; charset=UTF-8"
+const BINARY_CONTENT = "application/octet-stream"
 
 var mpx_user, mpx_password, account, bucket, base_path string
 var lastPoll time.Time
 var notification int
 var s3svc *s3.S3
+
 // maps sources to a set of guids
 var sourceMap = make(map[string]map[string]bool)
 
@@ -152,7 +152,7 @@ func mirrorAudience(client scte224DSClient.AltContentClient, guid string) {
 	scteData, err := client.GetSCTEData(account, guid)
 	if nil == err {
 		scteBytes := scteData.Bytes()
-		var audience = &go_Scte224.AudiencePayload{}
+		var audience = &go_Scte2242018.AudiencePayload{}
 		err = xml.NewDecoder(scteData).Decode(audience)
 		if nil == err {
 			nestedAudienceMap := make(map[string]bool)
@@ -182,7 +182,7 @@ func mirrorViewingPolicy(client scte224DSClient.AltContentClient, guid string) {
 	scteData, err := client.GetSCTEData(account, guid)
 	if nil == err {
 		scteBytes := scteData.Bytes()
-		var viewingPolicy = &go_Scte224.ViewingPolicyPayload{}
+		var viewingPolicy = &go_Scte2242018.ViewingPolicyPayload{}
 		err = xml.NewDecoder(scteData).Decode(viewingPolicy)
 		if nil == err {
 			href := viewingPolicy.Audience.Href.String()
@@ -202,7 +202,7 @@ func mirrorPolicy(client scte224DSClient.AltContentClient, guid string) {
 	scteData, err := client.GetSCTEData(account, guid)
 	if nil == err {
 		scteBytes := scteData.Bytes()
-		var policy = &go_Scte224.PolicyPayload{}
+		var policy = &go_Scte2242018.PolicyPayload{}
 		err = xml.NewDecoder(scteData).Decode(policy)
 		if nil == err {
 			scanForViewingPolicies(client, policy)
@@ -213,7 +213,7 @@ func mirrorPolicy(client scte224DSClient.AltContentClient, guid string) {
 	}
 }
 
-func scanForViewingPolicies(client scte224DSClient.AltContentClient, policy *go_Scte224.PolicyPayload) {
+func scanForViewingPolicies(client scte224DSClient.AltContentClient, policy *go_Scte2242018.PolicyPayload) {
 	viewingPoliciesMap := make(map[string]bool)
 	for _, viewingPolicy := range policy.ViewingPolicies {
 
@@ -245,7 +245,7 @@ func mirrorMedia(client scte224DSClient.AltContentClient, guid string) {
 			var buf bytes.Buffer
 			err := treeLookup.Serialize(&buf)
 			if nil == err {
-				stashInS3("TreeLookup/"+ media.Id.String(), bytes.NewReader(buf.Bytes()), BINARY_CONTENT)
+				stashInS3("TreeLookup/"+media.Id.String(), bytes.NewReader(buf.Bytes()), BINARY_CONTENT)
 			} else {
 				logger.Println(err)
 			}
@@ -257,10 +257,10 @@ func mirrorMedia(client scte224DSClient.AltContentClient, guid string) {
 	}
 }
 
-func updateSource(source, guid string)  {
-	existingSources,ok := sourceMap[source]
+func updateSource(source, guid string) {
+	existingSources, ok := sourceMap[source]
 	if ok {
-		_,guidFound := existingSources[guid]
+		_, guidFound := existingSources[guid]
 		if !guidFound {
 			// didn't find this guid so add it and mirror to S3
 			allGuids := guid + "\n"
@@ -268,12 +268,12 @@ func updateSource(source, guid string)  {
 				allGuids = allGuids + key + "\n"
 			}
 			existingSources[guid] = true
-			stashInS3("Sources/"+ source, bytes.NewReader([]byte(allGuids+"\n")),TEXT_CONTENT)
+			stashInS3("Sources/"+source, bytes.NewReader([]byte(allGuids+"\n")), TEXT_CONTENT)
 		}
 	} else {
 		// no source existed so create it and send to S3
-		sourceMap[source] = map[string]bool{guid:true}
-		stashInS3("Sources/"+ source, bytes.NewReader([]byte(guid+"\n")),TEXT_CONTENT)
+		sourceMap[source] = map[string]bool{guid: true}
+		stashInS3("Sources/"+source, bytes.NewReader([]byte(guid+"\n")), TEXT_CONTENT)
 	}
 }
 
