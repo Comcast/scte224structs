@@ -15,6 +15,7 @@ import (
 	"os"
 	"time"
 	"code.comcast.com/jcolwe200/decider/lookup"
+	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2018/SCTE224-2018.xsd_go"
 )
 
 const TEXT_CONTENT = "text/plain; charset=UTF-8"
@@ -235,7 +236,7 @@ func mirrorMedia(client scte224DSClient.AltContentClient, guid string) {
 	scteData, err := client.GetSCTEData(account, guid)
 	if nil == err {
 		scteBytes := scteData.Bytes()
-		var media = &go_Scte224.MediaPayload{}
+		var media = &go_Scte2242018.MediaPayload{}
 		err = xml.NewDecoder(scteData).Decode(media)
 		if nil == err {
 			scanForPolicies(client, media)
@@ -276,7 +277,7 @@ func updateSource(source, guid string)  {
 	}
 }
 
-func scanForPolicies(client scte224DSClient.AltContentClient, payload *go_Scte224.MediaPayload) {
+func scanForPolicies(client scte224DSClient.AltContentClient, payload *go_Scte2242018.MediaPayload) {
 	policiesMap := make(map[string]bool)
 	for _, point := range payload.MediaPoints {
 		for _, apply := range point.Applies {
