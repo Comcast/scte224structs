@@ -9,19 +9,27 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
-	"os"
 )
+
+type DataServiceGuidResponse struct {
+	Entries []DataServiceGuidEntry
+}
 
 type DataServiceUpdatedResponse struct {
 	Entries []DataServiceUpdatedEntry
 }
 
+type DataServiceGuidEntry struct {
+	Id   string
+	Guid string
+}
+
 type DataServiceUpdatedEntry struct {
-	Id      string
-	Guid    string
+	DataServiceGuidEntry
 	Updated int64
 }
 
@@ -37,6 +45,8 @@ var Stage = Service_urls{Altcontent: "http://data.altcontent.tv.sandbox.theplatf
 
 const NOTIFY_PATH = "/notify?block=true&fields=true&clientId=%v&schema=1.1.0&filter={MediaSource|put,post},{Audience|put,post},{Policy|put,post},{ViewingPolicy|put,post}"
 
+const GuidLookupTemplate = "/data/MediaPoint/%v?schema=1.3.0&form=cjson&fields=guid,id"
+
 var token *plclient.IdentityToken
 var tokenDate time.Time = time.Now().Add(time.Duration(-2) * time.Hour)
 var username string
@@ -50,12 +60,12 @@ type AltContentClient struct {
 
 func milliTime(millis int64) time.Time {
 	sec := millis / 1000
-	nsec := (millis % 1000) * (int64(time.Millisecond)/int64(time.Nanosecond))
+	nsec := (millis % 1000) * (int64(time.Millisecond) / int64(time.Nanosecond))
 	return time.Unix(sec, nsec)
 }
 
 func timeToMillis(tempo time.Time) int64 {
-	return tempo.UnixNano() / (int64(time.Millisecond)/int64(time.Nanosecond))
+	return tempo.UnixNano() / (int64(time.Millisecond) / int64(time.Nanosecond))
 }
 
 func SetCredentials(user string, pw string, urls Service_urls) AltContentClient {
@@ -104,6 +114,46 @@ const (
 	VIEWING_POLICY DataType = "ViewingPolicy"
 	AUDIENCE       DataType = "Audience"
 )
+
+func (client AltContentClient) LoadMediaPointGuids(account string, mediaPointIds []string) (guidMapping map[string]string, err error) {
+	var token *plclient.IdentityToken
+	token, err = client.GetToken()
+	guidMapping = make(map[string]string, len(mediaPointIds))
+	if nil == err {
+		get, err := http.NewRequest("GET", env.AltcontentRO + fmt.Sprintf(GuidLookupTemplate, strings.Join(mediaPointIds, ",")), nil)
+		get.Header.Add("Authorization", token.EncodeBasicAuth(account))
+		if nil == err {
+			var response *http.Response
+			response, err = http.DefaultClient.Do(get)
+			if nil == err {
+				defer response.Body.Close()
+				if response.StatusCode != 200 {
+					errMsg := fmt.Sprintf("Got a %v from the DS trying to GET MediaPoint Guids", response.Status)
+					logger.Println(errMsg)
+					err = errors.New(errMsg)
+				} else {
+					var decodeErr error
+					decoder := json.NewDecoder(response.Body)
+					for nil == decodeErr {
+						guidLookupPayload := &DataServiceGuidResponse{}
+						decodeErr = decoder.Decode(guidLookupPayload)
+						  if nil == decodeErr {
+							  for _,guidResult := range guidLookupPayload.Entries {
+								  // map both directions since I don't yet know which I want
+								  guidMapping[guidResult.Guid] = guidResult.Id
+								  guidMapping[guidResult.Id] = guidResult.Guid
+							  }
+						  }
+					}
+					if decodeErr != io.EOF {
+						err = decodeErr
+					}
+				}
+			}
+		}
+	}
+	return
+}
 
 func (client AltContentClient) PollForNotifications(account, client_id string, guid_chan chan TypedGuid, lastNotificationId int) {
 	var token *plclient.IdentityToken
@@ -177,7 +227,6 @@ func (client AltContentClient) GetRecentlyUpdated(account string, updatedSince t
 	return
 }
 
-
 func (client AltContentClient) GetUpdatedTimestamps(account string, guids ...TypedGuid) (updatedMap map[TypedGuid]time.Time, err error) {
 
 	var mediaGuids, policyGuids, viewingPolicyGuids, audienceGuids []string
@@ -208,28 +257,28 @@ func (client AltContentClient) GetUpdatedTimestamps(account string, guids ...Typ
 }
 
 func (client AltContentClient) queryUpdatedSince(account string, updatedMap map[TypedGuid]time.Time, dt DataType, updatedSince time.Time) (err error) {
-		var token *plclient.IdentityToken
-		token, err = client.GetToken()
+	var token *plclient.IdentityToken
+	token, err = client.GetToken()
+	if nil == err {
+		get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0&form=cjson&byUpdated="+strconv.Itoa(int(timeToMillis(updatedSince)))+"~", nil)
+		get.Header.Add("Authorization", token.EncodeBasicAuth(account))
 		if nil == err {
-			get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0&form=cjson&byUpdated="+strconv.Itoa(int(timeToMillis(updatedSince)))+"~", nil)
-			get.Header.Add("Authorization", token.EncodeBasicAuth(account))
+			var response *http.Response
+			response, err = http.DefaultClient.Do(get)
 			if nil == err {
-				var response *http.Response
-				response, err = http.DefaultClient.Do(get)
-				if nil == err {
-					defer response.Body.Close()
-					if response.StatusCode != 200 {
-						errMsg := fmt.Sprintf("Got a %v from the DS trying to GET recently updated %v items", response.Status, dt)
-						logger.Println(errMsg)
-						err = errors.New(errMsg)
-					} else {
-						updatePayload := &DataServiceUpdatedResponse{}
-						err = json.NewDecoder(response.Body).Decode(updatePayload)
-						if nil == err {
-							for _, entry := range updatePayload.Entries {
-								updatedMap[TypedGuid{Guid: entry.Guid, Type: dt}] = milliTime(entry.Updated)
-							}
+				defer response.Body.Close()
+				if response.StatusCode != 200 {
+					errMsg := fmt.Sprintf("Got a %v from the DS trying to GET recently updated %v items", response.Status, dt)
+					logger.Println(errMsg)
+					err = errors.New(errMsg)
+				} else {
+					updatePayload := &DataServiceUpdatedResponse{}
+					err = json.NewDecoder(response.Body).Decode(updatePayload)
+					if nil == err {
+						for _, entry := range updatePayload.Entries {
+							updatedMap[TypedGuid{Guid: entry.Guid, Type: dt}] = milliTime(entry.Updated)
 						}
+					}
 
 				}
 			}
