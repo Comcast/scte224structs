@@ -8,7 +8,7 @@ import (
 	xlink "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
 	xml_xsd "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
 	"encoding/xml"
-	xsdt "github.com/metaleap/go-xsd/types"
+	"github.com/metaleap/go-xsd/types"
 	"log"
 	"time"
 )
@@ -776,7 +776,7 @@ func (me *XsdGoPkgHasElem_MatchSignalsequenceextensioncomplexContentMediaPointTy
 }
 
 type XsdGoPkgHasAttr_MatchTime_XsdtDateTime_ struct {
-	MatchTime xsdt.DateTime `xml:"matchTime,attr,omitempty"`
+	MatchTime ConvertibleDateTime `xml:"matchTime,attr,omitempty"`
 }
 
 type XsdGoPkgHasAttr_MatchOffset_XsdtDuration_ struct {
