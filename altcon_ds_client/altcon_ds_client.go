@@ -260,7 +260,7 @@ func (client AltContentClient) queryUpdatedSince(account string, updatedMap map[
 	var token *plclient.IdentityToken
 	token, err = client.GetToken()
 	if nil == err {
-		get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0&fields=id,guid&form=cjson&byUpdated="+strconv.Itoa(int(timeToMillis(updatedSince)))+"~", nil)
+		get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0&fields=id,guid,updated&form=cjson&byUpdated="+strconv.Itoa(int(timeToMillis(updatedSince)))+"~", nil)
 		get.Header.Add("Authorization", token.EncodeBasicAuth(account))
 		if nil == err {
 			var response *http.Response
@@ -292,7 +292,7 @@ func (client AltContentClient) queryForUpdated(account string, updatedMap map[Ty
 		var token *plclient.IdentityToken
 		token, err = client.GetToken()
 		if nil == err {
-			get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0&form=cjson&byGuid="+strings.Join(guids, "|"), nil)
+			get, err := http.NewRequest("GET", env.AltcontentRO+"/data/"+string(dt)+"?schema=1.3.0fields=id,guid,updated&form=cjson&byGuid="+strings.Join(guids, "|"), nil)
 			get.Header.Add("Authorization", token.EncodeBasicAuth(account))
 			if nil == err {
 				var response *http.Response
