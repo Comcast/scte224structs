@@ -42,12 +42,25 @@ func main() {
 		client := scte224DSClient.SetCredentials(mpx_user, mpx_password, scte224DSClient.Prod)
 		go client.PollForNotifications(account, "Mirror", guid_spew, notification)
 		go scanForMissedNotifications(client)
+		inflightNotifications := make(map[scte224DSClient.TypedGuid]time.Time)
 		for {
 			select {
 			case tg := <-guid_spew:
 				logger.Println("received notification for ", tg)
-				go mirrorGuid(client, tg)
+				inflightNotifications[tg] = time.Now()
+				mirrorFromMap(client,inflightNotifications)
+			case <-time.After(1 * time.Second):
+				mirrorFromMap(client, inflightNotifications)
 			}
+		}
+	}
+}
+
+func mirrorFromMap(client scte224DSClient.AltContentClient, notificationsToMirror map[scte224DSClient.TypedGuid]time.Time) {
+	for notification,when := range notificationsToMirror {
+		if when.Before(time.Now().Add(-10 * time.Second)) {
+			delete(notificationsToMirror, notification)
+			go mirrorGuid(client, notification)
 		}
 	}
 }
