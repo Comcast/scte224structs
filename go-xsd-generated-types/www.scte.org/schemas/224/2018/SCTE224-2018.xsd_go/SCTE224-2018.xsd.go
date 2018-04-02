@@ -902,6 +902,9 @@ type XsdGoPkgHasAttr_Order_XsdtNonNegativeInteger_ struct {
 }
 
 type TMediaPointType struct {
+
+	DocumentOrder int
+
 	TIdentifiableType
 
 	XsdGoPkgHasAtts_Eligible
