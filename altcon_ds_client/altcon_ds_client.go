@@ -2,10 +2,10 @@ package scte224DSClient
 
 import (
 	"bytes"
-	"code.comcast.com/svp/plclient"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.comcast.com/svp/plclient"
 	"io"
 	"log"
 	"net/http"
@@ -120,7 +120,7 @@ func (client AltContentClient) LoadMediaPointGuids(account string, mediaPointIds
 	token, err = client.GetToken()
 	guidMapping = make(map[string]string, len(mediaPointIds))
 	if nil == err {
-		get, err := http.NewRequest("GET", env.AltcontentRO + fmt.Sprintf(GuidLookupTemplate, strings.Join(mediaPointIds, ",")), nil)
+		get, err := http.NewRequest("GET", env.AltcontentRO+fmt.Sprintf(GuidLookupTemplate, strings.Join(mediaPointIds, ",")), nil)
 		get.Header.Add("Authorization", token.EncodeBasicAuth(account))
 		if nil == err {
 			var response *http.Response
@@ -137,13 +137,13 @@ func (client AltContentClient) LoadMediaPointGuids(account string, mediaPointIds
 					for nil == decodeErr {
 						guidLookupPayload := &DataServiceGuidResponse{}
 						decodeErr = decoder.Decode(guidLookupPayload)
-						  if nil == decodeErr {
-							  for _,guidResult := range guidLookupPayload.Entries {
-								  // map both directions since I don't yet know which I want
-								  guidMapping[guidResult.Guid] = guidResult.Id
-								  guidMapping[guidResult.Id] = guidResult.Guid
-							  }
-						  }
+						if nil == decodeErr {
+							for _, guidResult := range guidLookupPayload.Entries {
+								// map both directions since I don't yet know which I want
+								guidMapping[guidResult.Guid] = guidResult.Id
+								guidMapping[guidResult.Id] = guidResult.Guid
+							}
+						}
 					}
 					if decodeErr != io.EOF {
 						err = decodeErr

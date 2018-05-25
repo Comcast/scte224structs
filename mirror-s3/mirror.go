@@ -1,8 +1,8 @@
 package main
 
 import (
-	"code.comcast.com/jcolwe200/decider/s3"
 	"flag"
+	"github.comcast.com/jcolwe200/decider/s3"
 	"log"
 	"os"
 )
@@ -16,7 +16,7 @@ func main() {
 	if "" == mpx_user || "" == mpx_password || "" == bucket {
 		flag.Usage()
 	} else {
-		_, s3err := s3.CreateDefaultS3Mirror(mpx_user, mpx_password, nil, nil, logger, false)
+		_, s3err := s3.CreateDefaultS3Mirror(mpx_user, mpx_password, account, bucket, nil, nil, logger, false)
 		if nil != s3err {
 			logger.Println(s3err)
 		}

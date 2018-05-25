@@ -5,12 +5,12 @@
 package go_Scte224
 
 import (
-	xsdt "github.com/metaleap/go-xsd/types"
-	xlink "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
-	xml_xsd "code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
 	"encoding/xml"
-	"time"
+	xsdt "github.com/metaleap/go-xsd/types"
+	xlink "github.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/1999/xlink.xsd_go"
+	xml_xsd "github.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.w3.org/2001/03/xml.xsd_go"
 	"log"
+	"time"
 )
 
 type MediaPayload struct {
@@ -19,7 +19,6 @@ type MediaPayload struct {
 }
 
 type AudiencePayload struct {
-
 	XMLName xml.Name
 	TAudienceType
 }

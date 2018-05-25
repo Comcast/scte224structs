@@ -4,14 +4,13 @@ import (
 	"encoding/xml"
 	"flag"
 	"github.com/metaleap/go-xsd/types"
-	"code.comcast.com/jcolwe200/scte224/altcon_ds_client"
-	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2015/SCTE224.xsd_go"
+	"github.comcast.com/jcolwe200/scte224/altcon_ds_client"
+	"github.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2018/SCTE224-2018.xsd_go"
 	"io/ioutil"
 	"log"
 	"regexp"
 	"strconv"
 	"time"
-	"code.comcast.com/jcolwe200/scte224/go-xsd-generated-types/www.scte.org/schemas/224/2018/SCTE224-2018.xsd_go"
 )
 
 type MediaPayload struct {
