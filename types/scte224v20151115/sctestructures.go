@@ -1,11 +1,11 @@
-package scte224v20180501
+package scte224v20151115
 
 import (
 	"encoding/xml"
 	"time"
 )
 
-const schemaLocation  = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
+const schemaLocation  = "http://www.scte.org/schemas/224/SCTE224-20151115.xsd"
 
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
@@ -14,8 +14,8 @@ type IdentifiableType struct {
 	Description string     `xml:"description,attr,omitempty"`
 	LastUpdated *time.Time `xml:"lastUpdated,attr,omitempty"`
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
-	AltIDs      []AltID    `xml:"http://www.scte.org/schemas/224/2018 AltID,omitempty"`
-	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224/2018 Metadata,omitempty"`
+	AltIDs      []AltID    `xml:"http://www.scte.org/schemas/224/2015 AltID,omitempty"`
+	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
 	Ext         string     `xml:"##other Ext,omitempty"`
 }
 
@@ -31,38 +31,34 @@ type ReusableableType struct {
 type Media struct {
 	ReusableableType
 
-	XMLName     xml.Name     `xml:"http://www.scte.org/schemas/224/2018 Media"`
+	XMLName     xml.Name     `xml:"http://www.scte.org/schemas/224/2015 Media"`
 	Effective   time.Time    `xml:"effective,attr,omitempty"`
 	Expires     time.Time    `xml:"expires,attr,omitempty"`
 	Source      string       `xml:"source,attr,omitempty"`
-	MediaPoints []MediaPoint `xml:"http://www.scte.org/schemas/224/2018 MediaPoint"`
+	MediaPoints []MediaPoint `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
 }
 
 // MediaPoint defines an SCTE 224 (ESNI) media point object.
 //Table 7
 type MediaPoint struct {
 	IdentifiableType
-	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224/2018 MediaPoint"`
+	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
 	Effective        time.Time     `xml:"effective,attr,omitempty"`
 	Expires          time.Time     `xml:"expires,attr,omitempty"`
 	MatchTime        time.Time     `xml:"matchTime,attr,omitempty"`
 	MatchOffset      time.Duration `xml:"matchOffset,attr,omitempty"`
 	Source           string        `xml:"source,attr,omitempty"`
-	ExpectedDuration time.Duration `xml:"expectedDuration,attr,omitempty"`
-	Order            uint          `xml:"order,attr,omitempty"`
-	Reusable         bool          `xml:"reusable,attr,omitempty"`
-	Removes          []Remove      `xml:"http://www.scte.org/schemas/224/2018 Remove"`
-	Applys           []Apply       `xml:"http://www.scte.org/schemas/224/2018 Apply"`
-	MatchSignals     []MatchSignal `xml:"http://www.scte.org/schemas/224/2018 MatchSignal"`
+	Removes          []Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
+	Applys           []Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
+	MatchSignals     []MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
 }
 type AltID struct {
-	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2018 AltID"`
-	Description string   `xml:"description,attr,omitempty"`
+	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2015 AltID"`
 	Value       string   `xml:",chardata"`
 }
 
 type Metadata struct {
-	XMLName        xml.Name         `xml:"http://www.scte.org/schemas/224/2018 Metadata"`
+	XMLName        xml.Name         `xml:"http://www.scte.org/schemas/224/2015 Metadata"`
 	MetadataDetail []MetadataDetail `xml:"http://ctsrmm.com/ctsesni MetadataDetail,omitempty"`
 	ScheduledStart *time.Time       `xml:"http://thistech.com/esni ScheduledStart,omitempty"`
 	ScheduledEnd   *time.Time       `xml:"http://thistech.com/esni ScheduledEnd,omitempty"`
@@ -83,12 +79,12 @@ type Metadata struct {
 	Sport      string `xml:"http://xml.nbcuni.com/listing/field sport,omitempty"`
 
 	//A&E stuff
-	AScheduledStart    *time.Time `xml:"http://www.scte.org/schemas/224/2018 ScheduledStart,omitempty"`
-	AScheduledEnd      *time.Time `xml:"http://www.scte.org/schemas/224/2018 ScheduledEnd,omitempty"`
-	ProgramTitle       string     `xml:"http://www.scte.org/schemas/224/2018 ProgramTitle,omitempty"`
-	ProgramDescription string     `xml:"http://www.scte.org/schemas/224/2018 ProgramDescription,omitempty"`
-	EpisodeTitle       string     `xml:"http://www.scte.org/schemas/224/2018 EpisodeTitle,omitempty"`
-	EpisodeDescription string     `xml:"http://www.scte.org/schemas/224/2018 EpisodeDescription,omitempty"`
+	AScheduledStart    *time.Time `xml:"http://www.scte.org/schemas/224/2015 ScheduledStart,omitempty"`
+	AScheduledEnd      *time.Time `xml:"http://www.scte.org/schemas/224/2015 ScheduledEnd,omitempty"`
+	ProgramTitle       string     `xml:"http://www.scte.org/schemas/224/2015 ProgramTitle,omitempty"`
+	ProgramDescription string     `xml:"http://www.scte.org/schemas/224/2015 ProgramDescription,omitempty"`
+	EpisodeTitle       string     `xml:"http://www.scte.org/schemas/224/2015 EpisodeTitle,omitempty"`
+	EpisodeDescription string     `xml:"http://www.scte.org/schemas/224/2015 EpisodeDescription,omitempty"`
 }
 
 //Normalized stuff
@@ -168,28 +164,27 @@ type DeviceRestrictions struct {
 
 //Table 10
 type Apply struct {
-	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224/2018 Apply"`
+	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224/2015 Apply"`
 	Duration string   `xml:"duration,attr,omitempty"`
-	Priority uint     `xml:"priority,attr,omitempty"`
-	Policys  []Policy `xml:"http://www.scte.org/schemas/224/2018 Policy,omitempty"`
+	Policys  []Policy `xml:"http://www.scte.org/schemas/224/2015 Policy,omitempty"`
 }
 
 //Table 9
 type Remove struct {
-	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2018 Remove"`
-	Policys []Policy `xml:"http://www.scte.org/schemas/224/2018 Policy",omitempty`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Remove"`
+	Policys []Policy `xml:"http://www.scte.org/schemas/224/2015 Policy",omitempty`
 }
 
 //Table 8
 type MatchSignal struct {
-	XMLName         xml.Name `xml:"http://www.scte.org/schemas/224/2018 MatchSignal"`
+	XMLName         xml.Name `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
 	Match           string   `xml:"match,attr,omitempty"`
 	SignalTolerance string   `xml:"signalTolerance,attr,omitempty"`
-	Assertions      []Assert `xml:"http://www.scte.org/schemas/224/2018 Assert,omitempty"`
+	Assertions      []Assert `xml:"http://www.scte.org/schemas/224/2015 Assert,omitempty"`
 }
 
 type Assert struct {
-	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2018 Assert"`
+	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2015 Assert"`
 	Declaration string   `xml:",chardata"`
 }
 
@@ -197,30 +192,30 @@ type Assert struct {
 //Table 11
 type Policy struct {
 	ReusableableType
-	XMLName        xml.Name        `xml:"http://www.scte.org/schemas/224/2018 Policy"`
-	ViewingPolicys []ViewingPolicy `xml:"http://www.scte.org/schemas/224/2018 ViewingPolicy,omitempty"`
-	Metadata       string          `xml:"http://www.scte.org/schemas/224/2018 Metadata,omitempty"`
+	XMLName        xml.Name        `xml:"http://www.scte.org/schemas/224/2015 Policy"`
+	ViewingPolicys []ViewingPolicy `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy,omitempty"`
+	Metadata       string          `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
 }
 
 //Table 12
 type ViewingPolicy struct {
 	ReusableableType
-	XMLName  xml.Name   `xml:"http://www.scte.org/schemas/224/2018 ViewingPolicy"`
-	Audience *Audience  `xml:"http://www.scte.org/schemas/224/2018 Audience,omitempty"`
-	Anys     []Any      `xml:"http://www.scte.org/schemas/224/2018 Any,omitempty"`
+	XMLName  xml.Name   `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy"`
+	Audience *Audience  `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
+	Anys     []Any      `xml:"http://www.scte.org/schemas/224/2015 Any,omitempty"`
 	Contents []AContent `xml:"urn:scte:224:action Content,omitempty"`
 	FF       []Item     `xml:"urn:scte:224:action FastForward,omitempty"`
 	Capture  []Capture  `xml:"urn:scte:224:action Capture,omitempty"`
-	Metadata string     `xml:"http://www.scte.org/schemas/224/2018 Metadata,omitempty"`
+	Metadata string     `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
 }
 
 //Table 13
 type Audience struct {
 	ReusableableType
-	XMLName        xml.Name   `xml:"http://www.scte.org/schemas/224/2018 Audience"`
+	XMLName        xml.Name   `xml:"http://www.scte.org/schemas/224/2015 Audience"`
 	Match          string     `xml:"match,attr,omitempty"`
-	Metadata       *Metadata  `xml:"http://www.scte.org/schemas/224/2018 Metadata,omitempty"`
-	Audiences      []Audience `xml:"http://www.scte.org/schemas/224/2018 Audience,omitempty"`
+	Metadata       *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
+	Audiences      []Audience `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
 	Virds          []Item     `xml:"urn:scte:224:audience Vird,omitempty"`
 	Zips           []Item     `xml:"urn:scte:224:audience Zip,omitempty"`
 	Features       []Item     `xml:"urn:scte:224:audience Feature,omitempty"`
@@ -256,33 +251,33 @@ type Item struct {
 }
 
 type Any struct {
-	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2018 Any"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Any"`
 	Value   string   `xml:",chardata"`
 }
 
 //********************* Results Types *************************//
 //Table 14
 type Results struct {
-	XMLName        xml.Name        `xml:"http://www.scte.org/schemas/224/2018 Results"`
+	XMLName        xml.Name        `xml:"http://www.scte.org/schemas/224/2015 Results"`
 	Size           int             `xml:"size,attr,omitempty"`
-	Medias         []Media         `xml:"http://www.scte.org/schemas/224/2018 Media"`
-	MediaPoints    []MediaPoint    `xml:"http://www.scte.org/schemas/224/2018 MediaPoint"`
-	Policys        []Policy        `xml:"http://www.scte.org/schemas/224/2018 Policy"`
-	ViewingPolicys []ViewingPolicy `xml:"http://www.scte.org/schemas/224/2018 ViewingPolicy"`
-	Audiences      []Audience      `xml:"http://www.scte.org/schemas/224/2018 Audience"`
-	Audits         []Audit         `xml:"http://www.scte.org/schemas/224/2018 Audit"`
+	Medias         []Media         `xml:"http://www.scte.org/schemas/224/2015 Media"`
+	MediaPoints    []MediaPoint    `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
+	Policys        []Policy        `xml:"http://www.scte.org/schemas/224/2015 Policy"`
+	ViewingPolicys []ViewingPolicy `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy"`
+	Audiences      []Audience      `xml:"http://www.scte.org/schemas/224/2015 Audience"`
+	Audits         []Audit         `xml:"http://www.scte.org/schemas/224/2015 Audit"`
 }
 
 //********************* Audit Types *************************//
 //Table 15
 type Audit struct {
 	IdentifiableType
-	XMLName       xml.Name `xml:"http://www.scte.org/schemas/224/2018 Audit"`
+	XMLName       xml.Name `xml:"http://www.scte.org/schemas/224/2015 Audit"`
 	XLinkHRef     string   `xml:"http://www.w3.org/1999/xlink href,attr,omitempty"`
 	XLinkRole     string   `xml:"http://www.w3.org/1999/xlink role,attr,omitempty"`
 	Authorization string   `xml:"authorization,attr,omitempty"`
 	PolicyMode    string   `xml:"policyMode,attr,omitempty"`
 	Trigger       string   `xml:"trigger,attr,omitempty"`
 	Result        string   `xml:"result,attr,omitempty"`
-	Audits        []Audit  `xml:"http://www.scte.org/schemas/224/2018 Audit"`
+	Audits        []Audit  `xml:"http://www.scte.org/schemas/224/2015 Audit"`
 }
