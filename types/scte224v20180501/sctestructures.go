@@ -32,8 +32,8 @@ type Media struct {
 	ReusableableType
 
 	XMLName     xml.Name     `xml:"http://www.scte.org/schemas/224 Media"`
-	Effective   *time.Time    `xml:"effective,attr,omitempty"`
-	Expires     *time.Time    `xml:"expires,attr,omitempty"`
+	Effective   *time.Time   `xml:"effective,attr,omitempty"`
+	Expires     *time.Time   `xml:"expires,attr,omitempty"`
 	Source      string       `xml:"source,attr,omitempty"`
 	MediaPoints []MediaPoint `xml:"http://www.scte.org/schemas/224 MediaPoint"`
 }
@@ -42,19 +42,19 @@ type Media struct {
 //Table 7
 type MediaPoint struct {
 	IdentifiableType
-	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224 MediaPoint"`
+	XMLName          xml.Name       `xml:"http://www.scte.org/schemas/224 MediaPoint"`
 	Effective        *time.Time     `xml:"effective,attr,omitempty"`
 	Expires          *time.Time     `xml:"expires,attr,omitempty"`
 	MatchTime        *time.Time     `xml:"matchTime,attr,omitempty"`
 	MatchOffset      *time.Duration `xml:"matchOffset,attr,omitempty"`
-	Source           string        `xml:"source,attr,omitempty"`
+	Source           string         `xml:"source,attr,omitempty"`
 	ExpectedDuration *time.Duration `xml:"expectedDuration,attr,omitempty"`
-	Order            uint          `xml:"order,attr,omitempty"`
-	Reusable         bool          `xml:"reusable,attr,omitempty"`
-	Removes          []Remove      `xml:"http://www.scte.org/schemas/224 Remove"`
-	Applys           []Apply       `xml:"http://www.scte.org/schemas/224 Apply"`
-	MatchSignals     []MatchSignal `xml:"http://www.scte.org/schemas/224 MatchSignal"`
-	MediaGuid        string        `xml:"-"` // used internally to track which media this point is part of
+	Order            uint           `xml:"order,attr,omitempty"`
+	Reusable         bool           `xml:"reusable,attr,omitempty"`
+	Removes          []Remove       `xml:"http://www.scte.org/schemas/224 Remove"`
+	Applys           []Apply        `xml:"http://www.scte.org/schemas/224 Apply"`
+	MatchSignals     []MatchSignal  `xml:"http://www.scte.org/schemas/224 MatchSignal"`
+	MediaGuid        string         `xml:"-"` // used internally to track which media this point is part of
 }
 type AltId struct {
 	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224 AltID"`
@@ -156,8 +156,8 @@ type FoxAttributes struct {
 }
 
 type DeliveryRestrictions struct {
-	XMLName            xml.Name           `xml:"http://schema.foxinc.com/esni DeliveryRestrictions,omitempty"`
-	WebEnabled         bool               `xml:"http://schema.foxinc.com/esni WebEnabled,omitempty"`
+	XMLName            xml.Name            `xml:"http://schema.foxinc.com/esni DeliveryRestrictions,omitempty"`
+	WebEnabled         bool                `xml:"http://schema.foxinc.com/esni WebEnabled,omitempty"`
 	DeviceRestrictions *DeviceRestrictions `xml:"http://schema.foxinc.com/esni DeviceRestrictions,omitempty"`
 }
 
