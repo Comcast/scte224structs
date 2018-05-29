@@ -10,11 +10,11 @@ const schemaLocation  = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
 type IdentifiableType struct {
-	ID          string     `xml:"id,attr,omitempty"`
+	Id          string     `xml:"id,attr,omitempty"`
 	Description string     `xml:"description,attr,omitempty"`
 	LastUpdated *time.Time `xml:"lastUpdated,attr,omitempty"`
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
-	AltIDs      []AltID    `xml:"http://www.scte.org/schemas/224/2018 AltID,omitempty"`
+	AltIds      []AltId    `xml:"http://www.scte.org/schemas/224/2018 AltID,omitempty"`
 	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224/2018 Metadata,omitempty"`
 	Ext         string     `xml:"##other Ext,omitempty"`
 }
@@ -55,7 +55,7 @@ type MediaPoint struct {
 	Applys           []Apply       `xml:"http://www.scte.org/schemas/224/2018 Apply"`
 	MatchSignals     []MatchSignal `xml:"http://www.scte.org/schemas/224/2018 MatchSignal"`
 }
-type AltID struct {
+type AltId struct {
 	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2018 AltID"`
 	Description string   `xml:"description,attr,omitempty"`
 	Value       string   `xml:",chardata"`
