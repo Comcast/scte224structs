@@ -32,8 +32,8 @@ type Media struct {
 	ReusableableType
 
 	XMLName     xml.Name     `xml:"http://www.scte.org/schemas/224 Media"`
-	Effective   time.Time    `xml:"effective,attr,omitempty"`
-	Expires     time.Time    `xml:"expires,attr,omitempty"`
+	Effective   *time.Time    `xml:"effective,attr,omitempty"`
+	Expires     *time.Time    `xml:"expires,attr,omitempty"`
 	Source      string       `xml:"source,attr,omitempty"`
 	MediaPoints []MediaPoint `xml:"http://www.scte.org/schemas/224 MediaPoint"`
 }
@@ -43,12 +43,12 @@ type Media struct {
 type MediaPoint struct {
 	IdentifiableType
 	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224 MediaPoint"`
-	Effective        time.Time     `xml:"effective,attr,omitempty"`
-	Expires          time.Time     `xml:"expires,attr,omitempty"`
-	MatchTime        time.Time     `xml:"matchTime,attr,omitempty"`
-	MatchOffset      time.Duration `xml:"matchOffset,attr,omitempty"`
+	Effective        *time.Time     `xml:"effective,attr,omitempty"`
+	Expires          *time.Time     `xml:"expires,attr,omitempty"`
+	MatchTime        *time.Time     `xml:"matchTime,attr,omitempty"`
+	MatchOffset      *time.Duration `xml:"matchOffset,attr,omitempty"`
 	Source           string        `xml:"source,attr,omitempty"`
-	ExpectedDuration time.Duration `xml:"expectedDuration,attr,omitempty"`
+	ExpectedDuration *time.Duration `xml:"expectedDuration,attr,omitempty"`
 	Order            uint          `xml:"order,attr,omitempty"`
 	Reusable         bool          `xml:"reusable,attr,omitempty"`
 	Removes          []Remove      `xml:"http://www.scte.org/schemas/224 Remove"`
@@ -158,7 +158,7 @@ type FoxAttributes struct {
 type DeliveryRestrictions struct {
 	XMLName            xml.Name           `xml:"http://schema.foxinc.com/esni DeliveryRestrictions,omitempty"`
 	WebEnabled         bool               `xml:"http://schema.foxinc.com/esni WebEnabled,omitempty"`
-	DeviceRestrictions DeviceRestrictions `xml:"http://schema.foxinc.com/esni DeviceRestrictions,omitempty"`
+	DeviceRestrictions *DeviceRestrictions `xml:"http://schema.foxinc.com/esni DeviceRestrictions,omitempty"`
 }
 
 type DeviceRestrictions struct {
@@ -240,12 +240,12 @@ type Capture struct {
 }
 
 type StartWindow struct {
-	Percentage Item `xml:"urn:scte:224:action Percentage,omitempty"`
+	Percentage *Item `xml:"urn:scte:224:action Percentage,omitempty"`
 }
 
 type StopWindow struct {
-	Offset     Item `xml:"urn:scte:224:action Offset,omitempty"`
-	Percentage Item `xml:"urn:scte:224:action Percentage,omitempty"`
+	Offset     *Item `xml:"urn:scte:224:action Offset,omitempty"`
+	Percentage *Item `xml:"urn:scte:224:action Percentage,omitempty"`
 }
 
 type AContent struct {

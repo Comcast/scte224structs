@@ -32,8 +32,8 @@ type Media struct {
 	ReusableableType
 
 	XMLName     xml.Name     `xml:"http://www.scte.org/schemas/224/2015 Media"`
-	Effective   time.Time    `xml:"effective,attr,omitempty"`
-	Expires     time.Time    `xml:"expires,attr,omitempty"`
+	Effective   *time.Time    `xml:"effective,attr,omitempty"`
+	Expires     *time.Time    `xml:"expires,attr,omitempty"`
 	Source      string       `xml:"source,attr,omitempty"`
 	MediaPoints []MediaPoint `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
 }
@@ -43,10 +43,10 @@ type Media struct {
 type MediaPoint struct {
 	IdentifiableType
 	XMLName      xml.Name      `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
-	Effective    time.Time     `xml:"effective,attr,omitempty"`
-	Expires      time.Time     `xml:"expires,attr,omitempty"`
-	MatchTime    time.Time     `xml:"matchTime,attr,omitempty"`
-	MatchOffset  time.Duration `xml:"matchOffset,attr,omitempty"`
+	Effective    *time.Time     `xml:"effective,attr,omitempty"`
+	Expires      *time.Time     `xml:"expires,attr,omitempty"`
+	MatchTime    *time.Time     `xml:"matchTime,attr,omitempty"`
+	MatchOffset  *time.Duration `xml:"matchOffset,attr,omitempty"`
 	Source       string        `xml:"source,attr,omitempty"`
 	Removes      []Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
 	Applys       []Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
