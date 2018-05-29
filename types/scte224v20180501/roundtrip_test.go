@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-const CALI_XML = `<Media xmlns:audience="urn:scte:224:audience" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:action="urn:scte:224:action" xmlns="http://www.scte.org/schemas/224/2018" id="nbcuni.com/media/NBCS_CALIFORNIA/BROADCAST" description="NBCS_CALIFORNIA" lastUpdated="2018-05-29T00:44:57.000Z" source="CSN_WEST">
+const CALI_XML = `<Media xmlns:audience="urn:scte:224:audience" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:action="urn:scte:224:action" xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/media/NBCS_CALIFORNIA/BROADCAST" description="NBCS_CALIFORNIA" lastUpdated="2018-05-29T00:44:57.000Z" source="CSN_WEST">
 <MediaPoint id="nbcuni.com/media/NBCS_CALIFORNIA/program/00024MA000000008271T0529180100/BROADCAST/start" description="Behind the Mask" lastUpdated="2018-05-08T00:49:37.000Z" effective="2018-05-29T00:00:00.000Z" expires="2018-05-29T10:00:00.000Z" source="CSN_WEST">
 <AltID>SH019968500000</AltID>
 <AltID>CID:e0be5016-5ac2-4c36-8cef-fc00ce40372e</AltID>

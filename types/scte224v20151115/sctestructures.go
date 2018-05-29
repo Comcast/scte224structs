@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const schemaLocation  = "http://www.scte.org/schemas/224/SCTE224-20151115.xsd"
+const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20151115.xsd"
 
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
@@ -42,19 +42,20 @@ type Media struct {
 //Table 7
 type MediaPoint struct {
 	IdentifiableType
-	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
-	Effective        time.Time     `xml:"effective,attr,omitempty"`
-	Expires          time.Time     `xml:"expires,attr,omitempty"`
-	MatchTime        time.Time     `xml:"matchTime,attr,omitempty"`
-	MatchOffset      time.Duration `xml:"matchOffset,attr,omitempty"`
-	Source           string        `xml:"source,attr,omitempty"`
-	Removes          []Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
-	Applys           []Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
-	MatchSignals     []MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	XMLName      xml.Name      `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
+	Effective    time.Time     `xml:"effective,attr,omitempty"`
+	Expires      time.Time     `xml:"expires,attr,omitempty"`
+	MatchTime    time.Time     `xml:"matchTime,attr,omitempty"`
+	MatchOffset  time.Duration `xml:"matchOffset,attr,omitempty"`
+	Source       string        `xml:"source,attr,omitempty"`
+	Removes      []Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
+	Applys       []Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
+	MatchSignals []MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	MediaGuid    string        `xml:"-"` // used internally to track which media this point is part of
 }
 type AltId struct {
-	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2015 AltID"`
-	Value       string   `xml:",chardata"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 AltID"`
+	Value   string   `xml:",chardata"`
 }
 
 type Metadata struct {
