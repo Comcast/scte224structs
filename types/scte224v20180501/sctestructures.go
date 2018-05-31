@@ -178,7 +178,7 @@ type Apply struct {
 //Table 9
 type Remove struct {
 	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Remove"`
-	Policys []Policy `xml:"http://www.scte.org/schemas/224 Policy,omitempty""`
+	Policys []Policy `xml:"http://www.scte.org/schemas/224 Policy,omitempty"`
 }
 
 //Table 8
