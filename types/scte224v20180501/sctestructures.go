@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const schemaLocation  = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
+const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
 
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
@@ -171,13 +171,13 @@ type Apply struct {
 	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224/2018 Apply"`
 	Duration string   `xml:"duration,attr,omitempty"`
 	Priority uint     `xml:"priority,attr,omitempty"`
-	Policys  []Policy `xml:"http://www.scte.org/schemas/224/2018 Policy,omitempty"`
+	Policy   Policy   `xml:"http://www.scte.org/schemas/224/2018 Policy,omitempty"`
 }
 
 //Table 9
 type Remove struct {
 	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2018 Remove"`
-	Policys []Policy `xml:"http://www.scte.org/schemas/224/2018 Policy",omitempty`
+	Policy  *Policy  `xml:"http://www.scte.org/schemas/224/2018 Policy",omitempty`
 }
 
 //Table 8
