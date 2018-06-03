@@ -51,7 +51,7 @@ type MediaPoint struct {
 	Reusable         bool           `xml:"reusable,attr,omitempty"`
 	Removes          []*Remove      `xml:"http://www.scte.org/schemas/224 Remove"`
 	Applys           []*Apply       `xml:"http://www.scte.org/schemas/224 Apply"`
-	MatchSignals     []*MatchSignal `xml:"http://www.scte.org/schemas/224 MatchSignal"`
+	MatchSignal      *MatchSignal   `xml:"http://www.scte.org/schemas/224 MatchSignal"`
 	MediaGuid        string         `xml:"-"` // used internally to track which media this point is part of
 }
 

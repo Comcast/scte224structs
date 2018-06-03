@@ -40,15 +40,15 @@ type Media struct {
 //Table 7
 type MediaPoint struct {
 	IdentifiableType
-	XMLName      xml.Name       `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
-	Effective    *time.Time     `xml:"effective,attr,omitempty"`
-	Expires      *time.Time     `xml:"expires,attr,omitempty"`
-	MatchTime    *time.Time     `xml:"matchTime,attr,omitempty"`
-	MatchOffset  *time.Duration `xml:"matchOffset,attr,omitempty"`
-	Source       string         `xml:"source,attr,omitempty"`
-	Removes      []*Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
-	Applys       []*Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
-	MatchSignals []*MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	XMLName     xml.Name       `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
+	Effective   *time.Time     `xml:"effective,attr,omitempty"`
+	Expires     *time.Time     `xml:"expires,attr,omitempty"`
+	MatchTime   *time.Time     `xml:"matchTime,attr,omitempty"`
+	MatchOffset *time.Duration `xml:"matchOffset,attr,omitempty"`
+	Source      string         `xml:"source,attr,omitempty"`
+	Removes     []*Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
+	Applys      []*Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
+	MatchSignal *MatchSignal   `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
 }
 
 type AltID struct {
