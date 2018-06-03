@@ -10,7 +10,7 @@ const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20151115.xsd"
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
 type IdentifiableType struct {
-	ID          string     `xml:"id,attr,omitempty"`
+	Id          string     `xml:"id,attr,omitempty"`
 	Description string     `xml:"description,attr,omitempty"`
 	LastUpdated *time.Time `xml:"lastUpdated,attr,omitempty"`
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
@@ -23,7 +23,6 @@ type IdentifiableType struct {
 type ReusableableType struct {
 	IdentifiableType
 	XLinkHRef string `xml:"http://www.w3.org/1999/xlink href,attr,omitempty"`
-	//XLinkHRef string `xml:"xlink:href,attr,omitempty"`
 }
 
 //********************* Media Types *************************//
@@ -51,6 +50,7 @@ type MediaPoint struct {
 	Applys       []*Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
 	MatchSignals []*MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
 }
+
 type AltID struct {
 	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 AltID"`
 	Value   string   `xml:",chardata"`

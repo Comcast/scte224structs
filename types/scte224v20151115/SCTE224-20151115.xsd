@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.scte.org/schemas/224/2015"
-  targetNamespace="http://www.scte.org/schemas/224/2015" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" elementFormDefault="qualified">
-  <xs:import namespace="http://www.w3.org/1999/xlink"
-    schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
-  <xs:import namespace="http://www.w3.org/XML/1998/namespace"
-    schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.scte.org/schemas/224/2015" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://www.scte.org/schemas/224/2015" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
   <xs:element name="Entry" type="IdentifiableType" abstract="true"/>
   <xs:element name="Media" type="MediaType" substitutionGroup="Entry"/>
   <xs:element name="MediaPoint" type="MediaPointType" substitutionGroup="Entry"/>

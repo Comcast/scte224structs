@@ -10,7 +10,7 @@ const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
 type IdentifiableType struct {
-	ID          string     `xml:"id,attr,omitempty"`
+	Id          string     `xml:"id,attr,omitempty"`
 	Description string     `xml:"description,attr,omitempty"`
 	LastUpdated *time.Time `xml:"lastUpdated,attr,omitempty"`
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
@@ -23,7 +23,6 @@ type IdentifiableType struct {
 type ReusableableType struct {
 	IdentifiableType
 	XLinkHRef string `xml:"http://www.w3.org/1999/xlink href,attr,omitempty"`
-	//XLinkHRef string `xml:"xlink:href,attr,omitempty"`
 }
 
 //********************* Media Types *************************//
@@ -53,9 +52,9 @@ type MediaPoint struct {
 	Removes          []*Remove      `xml:"http://www.scte.org/schemas/224 Remove"`
 	Applys           []*Apply       `xml:"http://www.scte.org/schemas/224 Apply"`
 	MatchSignals     []*MatchSignal `xml:"http://www.scte.org/schemas/224 MatchSignal"`
-	// used to provide a back reference to the Media this point is within
-	MediaGuid string `xml:"-"`
+	MediaGuid        string         `xml:"-"` // used internally to track which media this point is part of
 }
+
 type AltID struct {
 	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224 AltID"`
 	Description string   `xml:"description,attr,omitempty"`
