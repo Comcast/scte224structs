@@ -2,6 +2,10 @@ package scte224v20151115
 
 import (
 	"encoding/xml"
+	"log"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -44,11 +48,54 @@ type MediaPoint struct {
 	Effective   *time.Time     `xml:"effective,attr,omitempty"`
 	Expires     *time.Time     `xml:"expires,attr,omitempty"`
 	MatchTime   *time.Time     `xml:"matchTime,attr,omitempty"`
-	MatchOffset *time.Duration `xml:"matchOffset,attr,omitempty"`
+	MatchOffset Duration `xml:"matchOffset,attr,omitempty"`
 	Source      string         `xml:"source,attr,omitempty"`
 	Removes     []*Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
 	Applys      []*Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
 	MatchSignal *MatchSignal   `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+}
+
+type Duration string
+
+func (dur Duration) GoDuration() time.Duration {
+	return ConvertDuration(string(dur))
+}
+
+var durationRegex = regexp.MustCompile("P(-?\\d*)D?T(-?\\d*H?-?\\d*M?-?\\d*\\.?\\d*S?)")
+
+// TODO: I doubt we will see durations longer than days but in theory we should handle them
+func ConvertDuration(xmlDuration string) (duration time.Duration) {
+
+	if "" != xmlDuration {
+		subMatches := durationRegex.FindStringSubmatch(xmlDuration)
+		if len(subMatches) == 3 {
+			var hours int
+			var nanoseconds time.Duration
+			if "" != subMatches[1] {
+				days, convErr := strconv.Atoi(subMatches[1])
+				if nil == convErr {
+					hours = 24 * days
+				} else {
+					log.Println(convErr)
+				}
+			}
+
+			if "" != subMatches[2] {
+				parsedDur, convErr := time.ParseDuration(strings.ToLower(subMatches[2]))
+				if nil == convErr {
+					nanoseconds = parsedDur
+				} else {
+					log.Println(convErr)
+				}
+			}
+			duration = nanoseconds + time.Duration(hours)*time.Hour
+		}
+	}
+	return duration
+}
+
+func ToDuration(dur time.Duration) Duration {
+	return Duration("P" + strings.ToUpper(dur.Round(time.Second).String()))
 }
 
 type AltID struct {
@@ -163,9 +210,9 @@ type DeviceRestrictions struct {
 
 //Table 10
 type Apply struct {
-	XMLName  xml.Name  `xml:"http://www.scte.org/schemas/224/2015 Apply"`
-	Duration string    `xml:"duration,attr,omitempty"`
-	Policys  []*Policy `xml:"http://www.scte.org/schemas/224/2015 Policy,omitempty"`
+	XMLName  xml.Name       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
+	Duration Duration `xml:"duration,attr,omitempty"`
+	Policys  []*Policy      `xml:"http://www.scte.org/schemas/224/2015 Policy,omitempty"`
 }
 
 //Table 9
@@ -176,10 +223,10 @@ type Remove struct {
 
 //Table 8
 type MatchSignal struct {
-	XMLName         xml.Name  `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
-	Match           string    `xml:"match,attr,omitempty"`
-	SignalTolerance string    `xml:"signalTolerance,attr,omitempty"`
-	Assertions      []*Assert `xml:"http://www.scte.org/schemas/224/2015 Assert,omitempty"`
+	XMLName         xml.Name       `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	Match           string         `xml:"match,attr,omitempty"`
+	SignalTolerance Duration `xml:"signalTolerance,attr,omitempty"`
+	Assertions      []*Assert      `xml:"http://www.scte.org/schemas/224/2015 Assert,omitempty"`
 }
 
 type Assert struct {
