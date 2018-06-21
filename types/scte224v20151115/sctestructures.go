@@ -44,15 +44,17 @@ type Media struct {
 //Table 7
 type MediaPoint struct {
 	IdentifiableType
-	XMLName     xml.Name       `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
-	Effective   *time.Time     `xml:"effective,attr,omitempty"`
-	Expires     *time.Time     `xml:"expires,attr,omitempty"`
-	MatchTime   *time.Time     `xml:"matchTime,attr,omitempty"`
-	MatchOffset Duration `xml:"matchOffset,attr,omitempty"`
-	Source      string         `xml:"source,attr,omitempty"`
-	Removes     []*Remove      `xml:"http://www.scte.org/schemas/224/2015 Remove"`
-	Applys      []*Apply       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
-	MatchSignal *MatchSignal   `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	XMLName     xml.Name     `xml:"http://www.scte.org/schemas/224/2015 MediaPoint"`
+	Effective   *time.Time   `xml:"effective,attr,omitempty"`
+	Expires     *time.Time   `xml:"expires,attr,omitempty"`
+	MatchTime   *time.Time   `xml:"matchTime,attr,omitempty"`
+	MatchOffset Duration     `xml:"matchOffset,attr,omitempty"`
+	Source      string       `xml:"source,attr,omitempty"`
+	Removes     []*Remove    `xml:"http://www.scte.org/schemas/224/2015 Remove"`
+	Applys      []*Apply     `xml:"http://www.scte.org/schemas/224/2015 Apply"`
+	MatchSignal *MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	Order       uint         `xml:""-"` // used internally for ordering but not in the 2015 XSD
+	MediaGuid   string       `xml:"-"`  // used internally to track which media this point is part of
 }
 
 type Duration string
@@ -210,23 +212,23 @@ type DeviceRestrictions struct {
 
 //Table 10
 type Apply struct {
-	XMLName  xml.Name       `xml:"http://www.scte.org/schemas/224/2015 Apply"`
+	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224/2015 Apply"`
 	Duration Duration `xml:"duration,attr,omitempty"`
-	Policys  []*Policy      `xml:"http://www.scte.org/schemas/224/2015 Policy,omitempty"`
+	Policy   *Policy  `xml:"http://www.scte.org/schemas/224/2015 Policy,omitempty"`
 }
 
 //Table 9
 type Remove struct {
-	XMLName xml.Name  `xml:"http://www.scte.org/schemas/224/2015 Remove"`
-	Policys []*Policy `xml:"http://www.scte.org/schemas/224/2015 Policy",omitempty`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Remove"`
+	Policy  *Policy  `xml:"http://www.scte.org/schemas/224/2015 Policy",omitempty`
 }
 
 //Table 8
 type MatchSignal struct {
-	XMLName         xml.Name       `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
-	Match           string         `xml:"match,attr,omitempty"`
-	SignalTolerance Duration `xml:"signalTolerance,attr,omitempty"`
-	Assertions      []*Assert      `xml:"http://www.scte.org/schemas/224/2015 Assert,omitempty"`
+	XMLName         xml.Name  `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
+	Match           string    `xml:"match,attr,omitempty"`
+	SignalTolerance Duration  `xml:"signalTolerance,attr,omitempty"`
+	Assertions      []*Assert `xml:"http://www.scte.org/schemas/224/2015 Assert,omitempty"`
 }
 
 type Assert struct {
