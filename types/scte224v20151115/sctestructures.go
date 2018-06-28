@@ -226,10 +226,21 @@ type Remove struct {
 //Table 8
 type MatchSignal struct {
 	XMLName         xml.Name  `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
-	Match           string    `xml:"match,attr,omitempty"`
+	Match           Match     `xml:"match,attr,omitempty"`
 	SignalTolerance Duration  `xml:"signalTolerance,attr,omitempty"`
 	Assertions      []*Assert `xml:"http://www.scte.org/schemas/224/2015 Assert,omitempty"`
 }
+
+type Match string
+
+//	Returns true if the value of this enumerated Match is "ALL".
+func (me Match) IsAll() bool { return me == "ALL" }
+
+//	Returns true if the value of this enumerated Match is "ANY".
+func (me Match) IsAny() bool { return me == "ANY" }
+
+//	Returns true if the value of this enumerated Match is "NONE".
+func (me Match) IsNone() bool { return me == "NONE" }
 
 type Assert struct {
 	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224/2015 Assert"`
