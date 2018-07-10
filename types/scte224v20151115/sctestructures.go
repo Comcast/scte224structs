@@ -53,7 +53,7 @@ type MediaPoint struct {
 	Removes     []*Remove    `xml:"http://www.scte.org/schemas/224/2015 Remove"`
 	Applys      []*Apply     `xml:"http://www.scte.org/schemas/224/2015 Apply"`
 	MatchSignal *MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
-	Order       uint         `xml:""-"` // used internally for ordering but not in the 2015 XSD
+	Order       uint         `xml:"-"` // used internally for ordering but not in the 2015 XSD
 	MediaGuid   string       `xml:"-"`  // used internally to track which media this point is part of
 }
 
