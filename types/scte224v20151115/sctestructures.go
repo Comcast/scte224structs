@@ -24,7 +24,7 @@ type IdentifiableType struct {
 }
 
 //Table 5
-type ReusableableType struct {
+type ReusableType struct {
 	IdentifiableType
 	XLinkHRef string `xml:"http://www.w3.org/1999/xlink href,attr,omitempty"`
 }
@@ -32,7 +32,7 @@ type ReusableableType struct {
 //********************* Media Types *************************//
 //Table 6
 type Media struct {
-	ReusableableType
+	ReusableType
 	XMLName     xml.Name      `xml:"http://www.scte.org/schemas/224/2015 Media"`
 	Effective   *time.Time    `xml:"effective,attr,omitempty"`
 	Expires     *time.Time    `xml:"expires,attr,omitempty"`
@@ -250,7 +250,7 @@ type Assert struct {
 //********************* Audience Types *************************//
 //Table 11
 type Policy struct {
-	ReusableableType
+	ReusableType
 	XMLName        xml.Name         `xml:"http://www.scte.org/schemas/224/2015 Policy"`
 	ViewingPolicys []*ViewingPolicy `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy,omitempty"`
 	Metadata       string           `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
@@ -258,7 +258,7 @@ type Policy struct {
 
 //Table 12
 type ViewingPolicy struct {
-	ReusableableType
+	ReusableType
 	XMLName  xml.Name    `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy"`
 	Audience *Audience   `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
 	Anys     []*Any      `xml:"http://www.scte.org/schemas/224/2015 Any,omitempty"`
@@ -270,7 +270,7 @@ type ViewingPolicy struct {
 
 //Table 13
 type Audience struct {
-	ReusableableType
+	ReusableType
 	XMLName        xml.Name    `xml:"http://www.scte.org/schemas/224/2015 Audience"`
 	Match          string      `xml:"match,attr,omitempty"`
 	Metadata       *Metadata   `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
