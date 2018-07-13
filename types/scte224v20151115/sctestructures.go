@@ -54,7 +54,7 @@ type MediaPoint struct {
 	Applys      []*Apply     `xml:"http://www.scte.org/schemas/224/2015 Apply"`
 	MatchSignal *MatchSignal `xml:"http://www.scte.org/schemas/224/2015 MatchSignal"`
 	Order       uint         `xml:"-"` // used internally for ordering but not in the 2015 XSD
-	MediaGuid   string       `xml:"-"`  // used internally to track which media this point is part of
+	MediaGuid   string       `xml:"-"` // used internally to track which media this point is part of
 }
 
 type Duration string
@@ -119,12 +119,12 @@ type Metadata struct {
 	LocationMetadata      *LocationMetadata      `xml:"http://schema.foxinc.com/esni LocationMetadata,omitempty"`
 	FoxMediaPointMetadata *FoxMediaPointMetadata `xml:"http://schema.foxinc.com/esni MediaPointMetaData,omitempty"`
 
-	//nbc stuff
-	HomeTeam   string `xml:"http://xml.nbcuni.com/listing/field homeTeam,omitempty"`
-	HomeTeamId string `xml:"http://xml.nbcuni.com/listing/field homeTeamId,omitempty"`
-	AwayTeam   string `xml:"http://xml.nbcuni.com/listing/field awayTeam,omitempty"`
-	AwayTeamId string `xml:"http://xml.nbcuni.com/listing/field awayTeamId,omitempty"`
-	Sport      string `xml:"http://xml.nbcuni.com/listing/field sport,omitempty"`
+	//superflaco stuff
+	HomeTeam   string `xml:"http://xml.superflaco.com/listing/field homeTeam,omitempty"`
+	HomeTeamId string `xml:"http://xml.superflaco.com/listing/field homeTeamId,omitempty"`
+	AwayTeam   string `xml:"http://xml.superflaco.com/listing/field awayTeam,omitempty"`
+	AwayTeamId string `xml:"http://xml.superflaco.com/listing/field awayTeamId,omitempty"`
+	Sport      string `xml:"http://xml.superflaco.com/listing/field sport,omitempty"`
 
 	//A&E stuff
 	AScheduledStart    *time.Time `xml:"http://www.scte.org/schemas/224/2015 ScheduledStart,omitempty"`
