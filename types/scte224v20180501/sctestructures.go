@@ -276,7 +276,7 @@ type ViewingPolicy struct {
 type Audience struct {
 	ReusableType
 	XMLName        xml.Name    `xml:"http://www.scte.org/schemas/224 Audience"`
-	Match          string      `xml:"match,attr,omitempty"`
+	Match          Match       `xml:"match,attr,omitempty"`
 	Metadata       *Metadata   `xml:"http://www.scte.org/schemas/224 Metadata,omitempty"`
 	Audiences      []*Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty"`
 	Virds          []*Item     `xml:"urn:scte:224:audience Vird,omitempty"`
