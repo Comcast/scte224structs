@@ -109,7 +109,7 @@ func TestUpgradeMedia(t *testing.T) {
 	if CALI_2018_XML != upgraded {
 		t.Log(upgraded)
 		t.Log("did not match")
-		t.Log(CALI_2015_XML)
+		t.Log(CALI_2018_XML)
 		t.Fail()
 	}
 }
