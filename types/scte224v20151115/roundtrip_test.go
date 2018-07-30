@@ -31,8 +31,6 @@ const CALI_XML = `<Media xmlns="http://www.scte.org/schemas/224/2015" id="superf
   </MediaPoint>
 </Media>`
 
-
-
 const CMCBAMainOOMCable2015 = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="nbcuni.com/audience/110_BA_Main_OOM_Cable" description="110_BA_Main_OOM_Cable" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
   <Vird xmlns="urn:scte:224:audience">CMC BA Main OOM Cable</Vird>
 </Audience>`
@@ -60,7 +58,7 @@ func TestUpgradeAudience(t *testing.T) {
 		t.Fail()
 	}
 }
-func TestAudienceRoundtrip(t *testing.T)  {
+func TestAudienceRoundtrip(t *testing.T) {
 
 }
 
