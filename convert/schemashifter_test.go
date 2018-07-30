@@ -58,17 +58,17 @@ const CALI_2018_XML = `<Media xmlns="http://www.scte.org/schemas/224" id="superf
   </MediaPoint>
 </Media>`
 
-const CMCBAMainOOMCable2015 = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="nbcuni.com/audience/110_BA_Main_OOM_Cable" description="110_BA_Main_OOM_Cable" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
-  <Vird xmlns="urn:scte:224:audience">CMC BA Main OOM Cable</Vird>
+const thoseGuys2015 = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="superflaco.com/audience/ThoseGuys" description="ThoseGuys" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
+  <Vird xmlns="urn:scte:224:audience">ThoseGuys</Vird>
 </Audience>`
 
-const CMCBAMainOOMCable2018 = `<Audience xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/audience/110_BA_Main_OOM_Cable" description="110_BA_Main_OOM_Cable" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
-  <Vird xmlns="urn:scte:224:audience">CMC BA Main OOM Cable</Vird>
+const thoseGuys2018 = `<Audience xmlns="http://www.scte.org/schemas/224" id="superflaco.com/audience/ThoseGuys" description="ThoseGuys" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
+  <Vird xmlns="urn:scte:224:audience">ThoseGuys</Vird>
 </Audience>`
 
 func TestUpgradeAudience(t *testing.T) {
 
-	decoder := xml.NewDecoder(strings.NewReader(CMCBAMainOOMCable2015))
+	decoder := xml.NewDecoder(strings.NewReader(thoseGuys2015))
 	var cmcScte2015 scte224_2015.Audience
 	decodeErr := decoder.Decode(&cmcScte2015)
 	if nil != decodeErr {
@@ -82,10 +82,10 @@ func TestUpgradeAudience(t *testing.T) {
 		t.FailNow()
 	}
 	upgraded := string(pretty)
-	if CMCBAMainOOMCable2018 != upgraded {
+	if thoseGuys2018 != upgraded {
 		t.Log(upgraded)
 		t.Log("did not match")
-		t.Log(CMCBAMainOOMCable2018)
+		t.Log(thoseGuys2018)
 		t.Fail()
 	}
 }
