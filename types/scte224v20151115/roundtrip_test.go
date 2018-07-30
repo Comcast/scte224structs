@@ -31,6 +31,39 @@ const CALI_XML = `<Media xmlns="http://www.scte.org/schemas/224/2015" id="superf
   </MediaPoint>
 </Media>`
 
+
+
+const CMCBAMainOOMCable2015 = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="nbcuni.com/audience/110_BA_Main_OOM_Cable" description="110_BA_Main_OOM_Cable" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
+  <Vird xmlns="urn:scte:224:audience">CMC BA Main OOM Cable</Vird>
+</Audience>`
+
+func TestUpgradeAudience(t *testing.T) {
+
+	decoder := xml.NewDecoder(strings.NewReader(CMCBAMainOOMCable2015))
+	var cmcScte2015 Audience
+	decodeErr := decoder.Decode(&cmcScte2015)
+	if nil != decodeErr {
+		t.Log(decodeErr)
+		t.FailNow()
+	}
+
+	pretty, marshalErr := xml.MarshalIndent(cmcScte2015, "", "  ")
+	if nil != marshalErr {
+		t.Log(marshalErr)
+		t.FailNow()
+	}
+	roundtripped := string(pretty)
+	if CMCBAMainOOMCable2015 != roundtripped {
+		t.Log(roundtripped)
+		t.Log("did not match")
+		t.Log(CMCBAMainOOMCable2015)
+		t.Fail()
+	}
+}
+func TestAudienceRoundtrip(t *testing.T)  {
+
+}
+
 func TestRoundtrip(t *testing.T) {
 
 	decoder := xml.NewDecoder(strings.NewReader(CALI_XML))
