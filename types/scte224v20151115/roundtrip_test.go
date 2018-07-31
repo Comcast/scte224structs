@@ -31,35 +31,61 @@ const CALI_XML = `<Media xmlns="http://www.scte.org/schemas/224/2015" id="superf
   </MediaPoint>
 </Media>`
 
-const CMCBAMainOOMCable2015 = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="nbcuni.com/audience/110_BA_Main_OOM_Cable" description="110_BA_Main_OOM_Cable" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
-  <Vird xmlns="urn:scte:224:audience">CMC BA Main OOM Cable</Vird>
+const AUDIENCE = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="superflaco.com/audience/TargetAudience" description="TargetAudience" lastUpdated="2018-07-17T17:14:32.359Z" match="ANY">
+  <Vird xmlns="urn:scte:224:audience">TargetVIRD</Vird>
 </Audience>`
 
-func TestUpgradeAudience(t *testing.T) {
+const VIEWING_POLICY = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224/2015" id="superflaco.com/viewingpolicy/TargetAudience_to_BA" description="TargetAudience_to_BA" lastUpdated="2018-07-17T17:14:32.714Z">
+  <Audience xmlns="http://www.scte.org/schemas/224/2015" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="superflaco.com/audience/TargetAudience"></Audience>
+  <Content xmlns="urn:scte:224:action">TARGETSTREAM</Content>
+</ViewingPolicy>`
 
-	decoder := xml.NewDecoder(strings.NewReader(CMCBAMainOOMCable2015))
-	var cmcScte2015 Audience
-	decodeErr := decoder.Decode(&cmcScte2015)
+func TestAudienceRoundtrip(t *testing.T) {
+
+	decoder := xml.NewDecoder(strings.NewReader(AUDIENCE))
+	var audience Audience
+	decodeErr := decoder.Decode(&audience)
 	if nil != decodeErr {
 		t.Log(decodeErr)
 		t.FailNow()
 	}
 
-	pretty, marshalErr := xml.MarshalIndent(cmcScte2015, "", "  ")
+	pretty, marshalErr := xml.MarshalIndent(audience, "", "  ")
 	if nil != marshalErr {
 		t.Log(marshalErr)
 		t.FailNow()
 	}
 	roundtripped := string(pretty)
-	if CMCBAMainOOMCable2015 != roundtripped {
+	if AUDIENCE != roundtripped {
 		t.Log(roundtripped)
 		t.Log("did not match")
-		t.Log(CMCBAMainOOMCable2015)
+		t.Log(AUDIENCE)
 		t.Fail()
 	}
 }
-func TestAudienceRoundtrip(t *testing.T) {
 
+func TestViewingPolicyRoundtrip(t *testing.T) {
+
+	decoder := xml.NewDecoder(strings.NewReader(VIEWING_POLICY))
+	var viewingPolicy ViewingPolicy
+	decodeErr := decoder.Decode(&viewingPolicy)
+	if nil != decodeErr {
+		t.Log(decodeErr)
+		t.FailNow()
+	}
+
+	pretty, marshalErr := xml.MarshalIndent(viewingPolicy, "", "  ")
+	if nil != marshalErr {
+		t.Log(marshalErr)
+		t.FailNow()
+	}
+	roundtripped := string(pretty)
+	if VIEWING_POLICY != roundtripped {
+		t.Log(roundtripped)
+		t.Log("did not match")
+		t.Log(VIEWING_POLICY)
+		t.Fail()
+	}
 }
 
 func TestRoundtrip(t *testing.T) {

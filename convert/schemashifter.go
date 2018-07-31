@@ -35,7 +35,9 @@ func UpgradeReusableType(reusableType scte224_2015.ReusableType) scte224.Reusabl
 func UpgradeAudience(audience scte224_2015.Audience) scte224.Audience {
 	var dst scte224.Audience
 	dst.XMLName = audience.XMLName
-	dst.AudienceProperty = audience.AudienceProperty
+	for _, audienceProp := range audience.AudienceProperty {
+		dst.AudienceProperty = append(dst.AudienceProperty, scte224.AnyProperty{XMLName: audienceProp.XMLName, Data: audienceProp.Data})
+	}
 	dst.Match = scte224.Match(audience.Match)
 	dst.ReusableType = UpgradeReusableType(audience.ReusableType)
 	return dst
@@ -44,7 +46,9 @@ func UpgradeAudience(audience scte224_2015.Audience) scte224.Audience {
 func UpgradeViewingPolicy(vp scte224_2015.ViewingPolicy) scte224.ViewingPolicy {
 	var dst scte224.ViewingPolicy
 	dst.XMLName = vp.XMLName
-	dst.ActionProperty = vp.ActionProperty
+	for _, actionProp := range vp.ActionProperty {
+		dst.ActionProperty = append(dst.ActionProperty, scte224.AnyProperty{XMLName: actionProp.XMLName, Data: actionProp.Data})
+	}
 	if vp.Audience != nil {
 		upgradedAudience := UpgradeAudience(*vp.Audience)
 		dst.Audience = &upgradedAudience
