@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" targetNamespace="http://www.scte.org/schemas/224" version="20180501" elementFormDefault="qualified">
+  <xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+  <xs:element name="Entry" type="IdentifiableType" abstract="true"/>
+  <xs:element name="Media" type="MediaType" substitutionGroup="Entry"/>
+  <xs:element name="MediaPoint" type="MediaPointType" substitutionGroup="Entry"/>
+  <xs:element name="Policy" type="PolicyType" substitutionGroup="Entry"/>
+  <xs:element name="ViewingPolicy" type="ViewingPolicyType" substitutionGroup="Entry"/>
+  <xs:element name="Audience" type="AudienceType" substitutionGroup="Entry"/>
+  <xs:element name="Results" type="ResultsType"/>
+  <xs:element name="Audit" type="AuditType" substitutionGroup="Entry"/>
+  <xs:complexType name="IdentifiableType" abstract="true">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="AltID">
+        <xs:annotation>
+          <xs:documentation>May be used to express additional identifiers (e.g. EIDR, Ad-ID)</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:anyURI">
+              <xs:attribute name="description" type="xs:normalizedString"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="Metadata">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element minOccurs="0" name="Ext">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:anyURI"/>
+    <xs:attribute name="description" type="xs:normalizedString"/>
+    <xs:attribute name="lastUpdated" type="xs:dateTime"/>
+    <xs:attribute ref="xml:base"/>
+  </xs:complexType>
+  <xs:complexType name="ReusableType" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="IdentifiableType">
+        <xs:attribute ref="xlink:href"/>
+        <!-- Uncomment this line for XML Schema version 1.1
+        <xs:assert
+          test="(empty(..[@xsi:type='IdentifiableType']) and exists(@id) and empty(@xlink:href) and exists(./*)) or (exists(..[@xsi:type='IdentifiableType']) and empty(@id) and exists(@xlink:href) and empty(./*)) or (exists(..[@xsi:type='IdentifiableType']) and empty(@id) and empty(@xlink:href) and exists(./*))"
+        />-->
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MediaType">
+    <xs:complexContent>
+      <xs:extension base="ReusableType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="MediaPoint" type="MediaPointType"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="Eligible"/>
+        <xs:attribute name="source" type="xs:anyURI"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MediaPointType">
+    <xs:complexContent>
+      <xs:extension base="IdentifiableType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Remove" maxOccurs="unbounded" type="RemoveType"> </xs:element>
+          <xs:element minOccurs="0" name="Apply" maxOccurs="unbounded" type="ApplyType"> </xs:element>
+          <xs:element minOccurs="0" name="MatchSignal" type="MatchSignalType"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="Eligible"/>
+        <xs:attribute name="matchTime" type="xs:dateTime"/>
+        <xs:attribute name="matchOffset" type="xs:duration"/>
+        <xs:attribute name="source" type="xs:anyURI"/>
+        <xs:attribute name="expectedDuration" type="xs:duration"/>
+        <xs:attribute name="order" type="xs:nonNegativeInteger"/>
+        <xs:attribute name="reusable" type="xs:boolean"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MatchSignalType">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="Assert" type="xs:string"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="Matchable"/>
+    <xs:attribute name="signalTolerance" type="xs:duration"/>
+  </xs:complexType>
+  <xs:complexType name="RemoveType">
+    <xs:sequence>
+      <xs:element ref="Policy"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ApplyType">
+    <xs:sequence>
+      <xs:element ref="Policy"/>
+    </xs:sequence>
+    <xs:attribute name="duration" type="xs:duration"/>
+    <xs:attribute name="priority" type="xs:nonNegativeInteger"/>
+  </xs:complexType>
+  <xs:complexType name="PolicyType">
+    <xs:complexContent>
+      <xs:extension base="ReusableType">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+          <xs:element ref="ViewingPolicy"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ViewingPolicyType">
+    <xs:complexContent>
+      <xs:extension base="ReusableType">
+        <xs:sequence minOccurs="0">
+          <xs:element ref="Audience"/>
+          <xs:any maxOccurs="unbounded" namespace="##other" processContents="lax">
+            <xs:annotation>
+              <xs:documentation>Action Property</xs:documentation>
+            </xs:annotation>
+          </xs:any>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="AudienceType">
+    <xs:complexContent>
+      <xs:extension base="ReusableType">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+          <xs:element ref="Audience"/>
+          <xs:any namespace="##other" processContents="lax">
+            <xs:annotation>
+              <xs:documentation>Audience Property</xs:documentation>
+            </xs:annotation>
+          </xs:any>
+        </xs:choice>
+        <xs:attributeGroup ref="Matchable"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ResultsType">
+    <xs:sequence>
+      <xs:element ref="Entry" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="size" type="xs:nonNegativeInteger"/>
+  </xs:complexType>
+  <xs:complexType name="AuditType">
+    <xs:complexContent>
+      <xs:extension base="IdentifiableType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" ref="Audit"/>
+        </xs:sequence>
+        <xs:attribute ref="xlink:href"/>
+        <xs:attribute ref="xlink:role"/>
+        <xs:attribute name="authorization" type="xs:token"/>
+        <xs:attribute default="APPLY" name="policyMode">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="APPLY"/>
+              <xs:enumeration value="REMOVE"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="trigger">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="NONE"/>
+              <xs:enumeration value="TIME"/>
+              <xs:enumeration value="SIGNAL"/>
+              <xs:enumeration value="DURATION"/>
+              <xs:enumeration value="GET"/>
+              <xs:enumeration value="PUT"/>
+              <xs:enumeration value="DELETE"/>
+              <xs:enumeration value="STATUS"/>
+              <xs:enumeration value="MANUAL"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute default="SUCCESS" name="result">
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="SUCCESS"/>
+              <xs:enumeration value="FAIL"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:attributeGroup name="Matchable">
+    <xs:attribute name="match" use="optional" default="ALL">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="ALL"/>
+          <xs:enumeration value="ANY"/>
+          <xs:enumeration value="NONE"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="Eligible">
+    <xs:attribute name="effective" type="xs:dateTime"/>
+    <xs:attribute name="expires" type="xs:dateTime"/>
+  </xs:attributeGroup>
+</xs:schema>
