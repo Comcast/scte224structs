@@ -59,6 +59,17 @@ type MediaPoint struct {
 	MediaGuid        string       `xml:"-"` // used internally to track which media this point is part of
 }
 
+func (mp *MediaPoint) HasExplicitOrder() bool {
+	return nil != mp.Order
+}
+
+func (mp *MediaPoint) GetOrder() uint {
+	if mp.HasExplicitOrder() {
+		return *mp.Order
+	}
+	return 0
+}
+
 type Metadata struct {
 	InnerXml string `xml:",innerxml"`
 }
@@ -118,6 +129,17 @@ type Apply struct {
 	Duration Duration `xml:"duration,attr,omitempty"`
 	Priority *uint    `xml:"priority,attr,omitempty"`
 	Policy   *Policy  `xml:"http://www.scte.org/schemas/224 Policy,omitempty"`
+}
+
+func (ap *Apply) HasExplicitPriority() bool {
+	return nil != ap.Priority
+}
+
+func (ap *Apply) GetPriority() uint {
+	if ap.HasExplicitPriority() {
+		return *ap.Priority
+	}
+	return 0
 }
 
 //Table 9
