@@ -51,7 +51,7 @@ type MediaPoint struct {
 	MatchOffset      Duration     `xml:"matchOffset,attr,omitempty"`
 	Source           string       `xml:"source,attr,omitempty"`
 	ExpectedDuration Duration     `xml:"expectedDuration,attr,omitempty"`
-	Order            uint         `xml:"order,attr,omitempty"`
+	Order            *uint        `xml:"order,attr,omitempty"`
 	Reusable         bool         `xml:"reusable,attr,omitempty"`
 	Removes          []*Remove    `xml:"http://www.scte.org/schemas/224 Remove"`
 	Applys           []*Apply     `xml:"http://www.scte.org/schemas/224 Apply"`
@@ -116,7 +116,7 @@ type AltID struct {
 type Apply struct {
 	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224 Apply"`
 	Duration Duration `xml:"duration,attr,omitempty"`
-	Priority uint     `xml:"priority,attr,omitempty"`
+	Priority *uint    `xml:"priority,attr,omitempty"`
 	Policy   *Policy  `xml:"http://www.scte.org/schemas/224 Policy,omitempty"`
 }
 
