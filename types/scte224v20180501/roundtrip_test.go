@@ -21,8 +21,11 @@ const CALI_XML = `<Media xmlns="http://www.scte.org/schemas/224" id="superflaco.
       <MetadataDetail xmlns="http://ctsrmm.com/ctsesni" name="SeriesEmbargo" type="string" provider="superflaco">false</MetadataDetail>
       <MetadataDetail xmlns="http://ctsrmm.com/ctsesni" name="ScheduledEnd" type="string" provider="superflaco">2018-05-29T01:30:00Z</MetadataDetail>
     </Metadata>
-    <Apply xmlns="http://www.scte.org/schemas/224">
+    <Apply xmlns="http://www.scte.org/schemas/224" priority="0">
       <Policy xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="superflaco.com/policy/SWITCH_to_CA"></Policy>
+    </Apply>
+    <Apply xmlns="http://www.scte.org/schemas/224">
+      <Policy xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="superflaco.com/policy/AnotherPolicy"></Policy>
     </Apply>
     <MatchSignal xmlns="http://www.scte.org/schemas/224" match="ANY">
       <Assert xmlns="http://www.scte.org/schemas/224">/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=16]/SegmentationUpid[@segmentationUpidType=1 and text()=&#39;SIGNAL_UPID&#39;]</Assert>

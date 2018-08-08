@@ -51,12 +51,23 @@ type MediaPoint struct {
 	MatchOffset      Duration     `xml:"matchOffset,attr,omitempty"`
 	Source           string       `xml:"source,attr,omitempty"`
 	ExpectedDuration Duration     `xml:"expectedDuration,attr,omitempty"`
-	Order            uint         `xml:"order,attr,omitempty"`
+	Order            *uint        `xml:"order,attr,omitempty"`
 	Reusable         bool         `xml:"reusable,attr,omitempty"`
 	Removes          []*Remove    `xml:"http://www.scte.org/schemas/224 Remove"`
 	Applys           []*Apply     `xml:"http://www.scte.org/schemas/224 Apply"`
 	MatchSignal      *MatchSignal `xml:"http://www.scte.org/schemas/224 MatchSignal"`
 	MediaGuid        string       `xml:"-"` // used internally to track which media this point is part of
+}
+
+func (mp *MediaPoint) HasExplicitOrder() bool {
+	return nil != mp.Order
+}
+
+func (mp *MediaPoint) GetOrder() uint {
+	if mp.HasExplicitOrder() {
+		return *mp.Order
+	}
+	return 0
 }
 
 type Metadata struct {
@@ -116,8 +127,19 @@ type AltID struct {
 type Apply struct {
 	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224 Apply"`
 	Duration Duration `xml:"duration,attr,omitempty"`
-	Priority uint     `xml:"priority,attr,omitempty"`
+	Priority *uint    `xml:"priority,attr,omitempty"`
 	Policy   *Policy  `xml:"http://www.scte.org/schemas/224 Policy,omitempty"`
+}
+
+func (ap *Apply) HasExplicitPriority() bool {
+	return nil != ap.Priority
+}
+
+func (ap *Apply) GetPriority() uint {
+	if ap.HasExplicitPriority() {
+		return *ap.Priority
+	}
+	return 0
 }
 
 //Table 9
