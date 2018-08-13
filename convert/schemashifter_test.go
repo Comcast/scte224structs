@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	scte224_2015 "github.comcast.com/jcolwe200/scte224/types/scte224v20151115"
+	scte224_2015 "github.com/Comcast/scte224structs/types/scte224v20151115"
 )
 
 const CALI_2015_XML = `<Media xmlns="http://www.scte.org/schemas/224/2015" id="superflaco.com/media/CALIFORNIA/BROADCAST" description="CALIFORNIA" lastUpdated="2018-05-29T00:44:57Z" source="CURRENT_CHANNEL">

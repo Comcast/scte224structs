@@ -1,8 +1,8 @@
 package convert
 
 import (
-	scte224_2015 "github.comcast.com/jcolwe200/scte224/types/scte224v20151115"
-	scte224 "github.comcast.com/jcolwe200/scte224/types/scte224v20180501"
+	scte224_2015 "github.com/Comcast/scte224structs/types/scte224v20151115"
+	scte224 "github.com/Comcast/scte224structs/types/scte224v20180501"
 )
 
 func UpgradeIdentifiableType(identifiableType scte224_2015.IdentifiableType) scte224.IdentifiableType {
