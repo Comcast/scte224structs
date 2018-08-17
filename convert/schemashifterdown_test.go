@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	scte224 "github.comcast.com/jcolwe200/scte224/types/scte224v20180501"
+	scte224 "github.com/Comcast/scte224structs/types/scte224v20180501"
 )
 
 func TestDowngradeAudience(t *testing.T) {
