@@ -117,7 +117,7 @@ func ToDuration(dur time.Duration) Duration {
 	return Duration("P" + strings.ToUpper(dur.Round(time.Second).String()))
 }
 
-// ZULU type gives the ablity to parse and format zulu string in go.
+// ZULU type gives the ablity to parse zulu strings in go.
 type ZULU string
 
 // String for ZULU will turn a time into a ZULU time formated string "0001-01-01T00:00:00Z"
