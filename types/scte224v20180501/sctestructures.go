@@ -14,13 +14,13 @@ const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
 // Structs for SCTE 224 2018 ESNI Objects.
 // Table 3
 type IdentifiableType struct {
-	Id          string     `xml:"id,attr,omitempty"`
-	Description string     `xml:"description,attr,omitempty"`
-	LastUpdated *time.Time `xml:"lastUpdated,attr,omitempty"`
-	XMLBase     string     `xml:"xml:base,attr,omitempty"`
-	AltIDs      []*AltID   `xml:"http://www.scte.org/schemas/224 AltID,omitempty"`
-	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224 Metadata,omitempty"`
-	Ext         *Metadata  `xml:"http://www.scte.org/schemas/224 Ext,omitempty"`
+	Id          string    `xml:"id,attr,omitempty"`
+	Description string    `xml:"description,attr,omitempty"`
+	LastUpdated ZULU      `xml:"lastUpdated,attr,omitempty"`
+	XMLBase     string    `xml:"xml:base,attr,omitempty"`
+	AltIDs      []*AltID  `xml:"http://www.scte.org/schemas/224 AltID,omitempty"`
+	Metadata    *Metadata `xml:"http://www.scte.org/schemas/224 Metadata,omitempty"`
+	Ext         *Metadata `xml:"http://www.scte.org/schemas/224 Ext,omitempty"`
 }
 
 //Table 5
@@ -34,8 +34,8 @@ type ReusableType struct {
 type Media struct {
 	ReusableType
 	XMLName     xml.Name      `xml:"http://www.scte.org/schemas/224 Media"`
-	Effective   *time.Time    `xml:"effective,attr,omitempty"`
-	Expires     *time.Time    `xml:"expires,attr,omitempty"`
+	Effective   ZULU          `xml:"effective,attr,omitempty"`
+	Expires     ZULU          `xml:"expires,attr,omitempty"`
 	Source      string        `xml:"source,attr,omitempty"`
 	MediaPoints []*MediaPoint `xml:"http://www.scte.org/schemas/224 MediaPoint"`
 }
@@ -45,9 +45,9 @@ type Media struct {
 type MediaPoint struct {
 	IdentifiableType
 	XMLName          xml.Name     `xml:"http://www.scte.org/schemas/224 MediaPoint"`
-	Effective        *time.Time   `xml:"effective,attr,omitempty"`
-	Expires          *time.Time   `xml:"expires,attr,omitempty"`
-	MatchTime        *time.Time   `xml:"matchTime,attr,omitempty"`
+	Effective        ZULU         `xml:"effective,attr,omitempty"`
+	Expires          ZULU         `xml:"expires,attr,omitempty"`
+	MatchTime        ZULU         `xml:"matchTime,attr,omitempty"`
 	MatchOffset      Duration     `xml:"matchOffset,attr,omitempty"`
 	Source           string       `xml:"source,attr,omitempty"`
 	ExpectedDuration Duration     `xml:"expectedDuration,attr,omitempty"`
@@ -115,6 +115,35 @@ func ConvertDuration(xmlDuration string) (duration time.Duration) {
 
 func ToDuration(dur time.Duration) Duration {
 	return Duration("P" + strings.ToUpper(dur.Round(time.Second).String()))
+}
+
+// ZULU type gives the ablity to parse and format zulu string in go.
+type ZULU string
+
+// String for ZULU will turn a time into a ZULU time formated string "0001-01-01T00:00:00Z"
+func (z ZULU) String(t time.Time) ZULU {
+	if t == (time.Time{}) {
+		log.Println("Time was empty.")
+	}
+	dateTime := strings.Split(t.UTC().String(), " ")
+	dateUTC := dateTime[0]
+	timeUTC := dateTime[1]
+
+	zulu := dateUTC + "T" + timeUTC + "Z"
+	return ZULU(zulu)
+}
+
+// Time for ZULU will take the zulu time string and convert it to a utc time stamp type time.Time
+func (z ZULU) Time() time.Time {
+	parsedTime := time.Time{}
+	zulu := string(z)
+
+	parsedTime, err := time.Parse(time.RFC3339, zulu)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return parsedTime
 }
 
 type AltID struct {
