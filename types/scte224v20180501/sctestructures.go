@@ -120,7 +120,7 @@ func ToDuration(dur time.Duration) Duration {
 // ZULU type gives the ablity to parse zulu strings in go.
 type ZULU string
 
-// String for ZULU will turn a time into a ZULU time formated string "0001-01-01T00:00:00Z"
+// String for ZULU will turn a time into a ZULU time formated string Example: "0001-01-01T00:00:00Z"
 func (z ZULU) String(t time.Time) ZULU {
 	if t == (time.Time{}) {
 		log.Println("Time was empty.")
