@@ -17,7 +17,7 @@ type IdentifiableType struct {
 	Id          string     `xml:"id,attr,omitempty" json:"id,omitempty"`
 	Description string     `xml:"description,attr,omitempty" json:"description,omitempty"`
 	LastUpdated *time.Time `xml:"lastUpdated,attr,omitempty" json:"lastUpdated,omitempty"`
-	XMLBase     string     `xml:"xml:base,attr,omitempty"`
+	XMLBase     string     `xml:"xml:base,attr,omitempty" json:"-"`
 	AltIDs      []*AltID   `xml:"http://www.scte.org/schemas/224 AltID,omitempty" json:"altIDs,omitempty"`
 	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224 Metadata,omitempty" json:"metadata,omitempty"`
 	Ext         *Metadata  `xml:"http://www.scte.org/schemas/224 Ext,omitempty" json:"ext,omitempty"`
