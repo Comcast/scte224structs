@@ -180,26 +180,26 @@ type Policy struct {
 	ViewingPolicys []*ViewingPolicy `xml:"http://www.scte.org/schemas/224 ViewingPolicy,omitempty" json:"viewingPolicys,omitempty"`
 }
 
-type AnyProperty struct {
-	XMLName xml.Name
-	Data    string `xml:",chardata" json:"data,omitempty"`
-}
-
 //Table 12
 type ViewingPolicy struct {
 	ReusableType
-	XMLName        xml.Name      `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
-	Audience       *Audience     `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
-	ActionProperty []AnyProperty `xml:",any" json:"actionProperty,omitempty"`
+	XMLName  xml.Name  `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
+	Audience *Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
+	Any
 }
 
 //Table 13
 type Audience struct {
 	ReusableType
-	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224 Audience" json:"-"`
-	Match            Match         `xml:"match,attr,omitempty" json:"match,omitempty"`
-	Audiences        []*Audience   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
-	AudienceProperty []AnyProperty `xml:",any" json:"audienceProperty,omitempty"`
+	XMLName   xml.Name    `xml:"http://www.scte.org/schemas/224 Audience" json:"-"`
+	Match     Match       `xml:"match,attr,omitempty" json:"match,omitempty"`
+	Audiences []*Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
+	Any
+}
+
+type Any struct {
+	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224 Any,omitempty" json:"-"`
+	InnerXml string   `xml:",innerxml" json:"anys,omitempty"`
 }
 
 //********************* Results Types *************************//
