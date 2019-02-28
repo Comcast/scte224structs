@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 )
 
@@ -183,23 +184,24 @@ type Policy struct {
 //Table 12
 type ViewingPolicy struct {
 	ReusableType
-	XMLName  xml.Name  `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
-	Audience *Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
-	Any
+	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
+	Match            Match         `xml:"match,attr,omitempty" json:"match,omitempty"`
+	Audiences        []*Audience   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
+	AudienceProperty []AnyProperty `xml:",any" json:"audienceProperty,omitempty"`
 }
 
 //Table 13
 type Audience struct {
 	ReusableType
-	XMLName   xml.Name    `xml:"http://www.scte.org/schemas/224 Audience" json:"-"`
-	Match     Match       `xml:"match,attr,omitempty" json:"match,omitempty"`
-	Audiences []*Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
-	Any
+	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224 Audience" json:"-"`
+	Match            Match         `xml:"match,attr,omitempty" json:"match,omitempty"`
+	Audiences        []*Audience   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
+	AudienceProperty []AnyProperty `xml:",any" json:"audienceProperty,omitempty"`
 }
 
-type Any struct {
-	XMLName  xml.Name `xml:"http://www.scte.org/schemas/224 Any,omitempty" json:"-"`
-	InnerXml string   `xml:",innerxml" json:"anys,omitempty"`
+type AnyProperty struct {
+	XMLName xml.Name `json:"-"`
+	Data    string   `xml:",innerxml" json:"data,omitempty"`
 }
 
 //********************* Results Types *************************//
@@ -227,4 +229,72 @@ type Audit struct {
 	Trigger       string   `xml:"trigger,attr,omitempty" json:"trigger,omitempty"`
 	Result        string   `xml:"result,attr,omitempty" json:"result,omitempty"`
 	Audits        []*Audit `xml:"http://www.scte.org/schemas/224 Audit" json:"audits,omitempty"`
+}
+
+func TestViewingPolicy(t *testing.T) {
+
+	var vpol *ViewingPolicy
+	err := xml.Unmarshal([]byte(viewingpolicy), &vpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling viewingpolicys %v", err)
+		t.FailNow()
+	}
+
+	vbyte, marshalErr := xml.Marshal(vpol)
+	if marshalErr != nil {
+		t.Errorf("Error Marshal %v", err)
+		t.FailNow()
+	}
+
+	var tvpol *testViewingPolicy
+	err = xml.Unmarshal(vbyte, &tvpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling %v", err)
+		t.FailNow()
+	}
+
+	if tvpol.FastForward == "" {
+		t.Log("action:FastForward is empty")
+		t.FailNow()
+	}
+
+	if tvpol.Content == "" {
+		t.Log("action:Content is empty")
+		t.FailNow()
+	}
+
+	// Capture
+	if len(tvpol.Capture) == 0 {
+		t.Log("action:Capture is empty and is supposed to have child nodes")
+		t.FailNow()
+	}
+
+	for _, capture := range tvpol.Capture {
+		// StartWindow
+		if capture.StartWindow == nil {
+			t.Log("action:Capture StartWindow is nil")
+			t.FailNow()
+		}
+		if capture.StartWindow.Percentage == "" {
+			t.Log("action:Capture StartWindow Percentage is empty")
+			t.Fail()
+		}
+
+		// StopWindow
+		if capture.StopWindow == nil {
+			t.Log("action:Capture StopWindow is nil")
+			t.FailNow()
+		}
+
+		if capture.StopWindow.Percentage == "" {
+			t.Log("action:Capture StopWindow Percentage is empty")
+			t.Fail()
+		}
+
+		// MidrollDAI
+		if capture.MidrollDAI == "" {
+			t.Log("action:Capture MidrollDAI is empty")
+			t.Fail()
+		}
+	}
 }
