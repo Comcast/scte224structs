@@ -160,7 +160,7 @@ type Policy struct {
 
 type AnyProperty struct {
 	XMLName xml.Name
-	Data    string `xml:",chardata"`
+	Data    string `xml:",innerxml"`
 }
 
 //Table 12
