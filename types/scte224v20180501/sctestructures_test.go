@@ -61,16 +61,6 @@ func TestViewingPolicy2018(t *testing.T) {
 	var vpol *ViewingPolicy
 	err := xml.Unmarshal([]byte(viewingpolicy), &vpol)
 
-	//mybytes, myerr := xml.Marshal(vpol)
-	//if myerr != nil {
-	//	t.Errorf("Error marshalling viewingpolicys %v", myerr)
-	//	t.FailNow()
-	//}
-	//
-	//mystring := string(mybytes)
-	//
-	//fmt.Print(mystring)
-
 	if err != nil {
 		t.Errorf("Error unmarshalling viewingpolicys %v", err)
 		t.FailNow()
