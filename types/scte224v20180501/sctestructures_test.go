@@ -60,6 +60,17 @@ func TestViewingPolicy2018(t *testing.T) {
 
 	var vpol *ViewingPolicy
 	err := xml.Unmarshal([]byte(viewingpolicy), &vpol)
+
+	//mybytes, myerr := xml.Marshal(vpol)
+	//if myerr != nil {
+	//	t.Errorf("Error marshalling viewingpolicys %v", myerr)
+	//	t.FailNow()
+	//}
+	//
+	//mystring := string(mybytes)
+	//
+	//fmt.Print(mystring)
+
 	if err != nil {
 		t.Errorf("Error unmarshalling viewingpolicys %v", err)
 		t.FailNow()
@@ -122,4 +133,66 @@ func TestViewingPolicy2018(t *testing.T) {
 			t.Fail()
 		}
 	}
+}
+
+const mediapoint string = `
+<MediaPoint xmlns="http://www.scte.org/schemas/224" description="Avail Start" effective="2016-07-05T14:59:50Z"
+       expectedDuration="PT30S" expires="2016-07-05T15:10:00Z" id="providerXYZ.com/media/break/1234/start" matchTime="2016-07-05T15:00:00Z">
+   <AltID description="Ad-ID">CNPA0484000H</AltID>
+   <Metadata>
+       <metadata DAIModel="SINGLE_ADVERTISER" duration="PT30S" offset="PT0S" ownerName="XYZ" ownerType="PROVIDER"/>
+       <metadata DAIModel="DOUBLE_ADVERTISER" duration="PT30S" offset="PT30S" ownerName="ABCD" ownerType="DISTRIBUTOR"/>
+   </Metadata>
+   <Apply duration="PT30S">
+       <Policy/>
+   </Apply>
+</MediaPoint>`
+
+func TestMediaPointMetadata(t *testing.T) {
+
+	var mp *MediaPoint
+	err := xml.Unmarshal([]byte(mediapoint), &mp)
+	if err != nil {
+		t.Errorf("Error unmarshalling mediapoint %v", err)
+		t.FailNow()
+	}
+
+	metadata := mp.Metadata
+	if metadata == nil {
+		t.Log("unexpected nil metadata")
+		t.FailNow()
+	}
+
+	nodes := metadata.Nodes
+	if nodes == nil {
+		t.Log("unexpected nil nodes")
+		t.FailNow()
+	}
+
+	if len(nodes) != 2 {
+		t.Log("unexpected exactly 2 nodes")
+		t.FailNow()
+	}
+
+	attributes := nodes[0].Attributes
+	if attributes == nil {
+		t.Log("unexpected nil attributes")
+		t.FailNow()
+	}
+
+	if len(attributes) != 5 {
+		t.Log("unexpected exactly 5 node attributes")
+		t.FailNow()
+	}
+
+	attr1 := attributes[0]
+	if attr1.Name.Local != "DAIModel" {
+		t.Errorf("unexpected attribute name %v", attr1.Name.Local)
+		t.FailNow()
+	}
+	if attr1.Value != "SINGLE_ADVERTISER" {
+		t.Errorf("unexpected attribute value %v", attr1.Value)
+		t.FailNow()
+	}
+
 }

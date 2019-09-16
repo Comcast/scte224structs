@@ -20,7 +20,7 @@ type IdentifiableType struct {
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
 	AltIDs      []*AltID   `xml:"http://www.scte.org/schemas/224/2015 AltID,omitempty"`
 	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
-	Ext         *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Ext,omitempty"`
+	Ext         *Ext       `xml:"http://www.scte.org/schemas/224 Ext,omitempty" json:"ext,omitempty"`
 }
 
 //Table 5
@@ -60,7 +60,19 @@ type MediaPoint struct {
 }
 
 type Metadata struct {
-	InnerXml string `xml:",innerxml"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Metadata" json:"-"`
+	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+}
+
+type Ext struct {
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Ext"`
+	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+}
+
+type Any struct {
+	XMLName    xml.Name   `json:"xmlname"`
+	Attributes []xml.Attr `xml:",any,attr"`
+	Value      string     `xml:",chardata" json:"value"`
 }
 
 type Duration string
