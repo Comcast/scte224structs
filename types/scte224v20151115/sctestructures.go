@@ -60,12 +60,12 @@ type MediaPoint struct {
 }
 
 type Metadata struct {
-	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Metadata" json:"-"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Metadata" json:"-"`
 	Nodes   []Any    `xml:",any" json:"values,omitempty"`
 }
 
 type Ext struct {
-	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Ext"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Ext"`
 	Nodes   []Any    `xml:",any" json:"values,omitempty"`
 }
 
