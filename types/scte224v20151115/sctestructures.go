@@ -20,7 +20,7 @@ type IdentifiableType struct {
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
 	AltIDs      []*AltID   `xml:"http://www.scte.org/schemas/224/2015 AltID,omitempty"`
 	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
-	Ext         *Ext       `xml:"http://www.scte.org/schemas/224/2015 Ext,omitempty" json:"ext,omitempty"`
+	Ext         *Ext       `xml:"http://www.scte.org/schemas/224/2015 Ext,omitempty"`
 }
 
 //Table 5
