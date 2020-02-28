@@ -185,9 +185,9 @@ type ViewingPolicy struct {
 	ReusableType
 	XMLName              xml.Name                    `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
 	Audience             *Audience                   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
-	SignalPointDeletion  *SignalPointDeletionAction  `xml:"urn:scte:224:action SignalPointDeletion" json:"-"`
-	SignalPointInsertion *SignalPointInsertionAction `xml:"urn:scte:224:action SignalPointInsertion" json:"-"`
-	Content              *ContentAction              `xml:"urn:scte:224:action Content" json:"-"`
+	SignalPointDeletion  *SignalPointDeletionAction  `xml:"urn:scte:224:action SignalPointDeletion,omitempty" json:"signalPointDeletion,omitempty"`
+	SignalPointInsertion *SignalPointInsertionAction `xml:"urn:scte:224:action SignalPointInsertion,omitempty" json:"signalPointInsertion,omitempty"`
+	Content              *ContentAction              `xml:"urn:scte:224:action Content,omitempty" json:"content,omitempty"`
 	ActionProperty       []AnyProperty               `xml:",any" json:"actionProperty,omitempty"`
 }
 

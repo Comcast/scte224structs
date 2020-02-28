@@ -1,6 +1,7 @@
 package scte224v20180501
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"testing"
 )
@@ -152,7 +153,7 @@ func TestRandomAction(t *testing.T) {
 		t.FailNow()
 	}
 
-	roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+	roundtrip, rerr := json.MarshalIndent(vpol, "", "  ")
 	if nil != rerr {
 		t.Error(rerr)
 	} else {
@@ -168,7 +169,7 @@ func TestContentAction(t *testing.T) {
 		t.FailNow()
 	}
 
-	roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+	roundtrip, rerr := json.MarshalIndent(vpol, "", "  ")
 	if nil != rerr {
 		t.Error(rerr)
 	} else {
