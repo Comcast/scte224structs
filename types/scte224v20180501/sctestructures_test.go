@@ -34,8 +34,8 @@ type testViewingPolicy struct {
 	XMLName        xml.Name       `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
 	Audience       *Audience      `xml:"http://www.scte.org/schemas/224 Audience" json:"audience,omitempty"`
 	FastForward    string         `xml:"FastForward,omitempty" json:"fastForward,omitempty"`
-	Capture        []*testCapture `xml:"Capture,omitempty" "json:"capture,omitempty"`
-	Content        string         `xml:"Content,omitempty" "json:"content,omitempty"`
+	Capture        []*testCapture `xml:"Capture,omitempty" json:"capture,omitempty"`
+	Content        string         `xml:"Content,omitempty" json:"content,omitempty"`
 }
 
 //Capture struct
@@ -120,6 +120,125 @@ func TestViewingPolicy2018(t *testing.T) {
 		if capture.MidrollDAI == "" {
 			t.Log("action:Capture MidrollDAI is empty")
 			t.Fail()
+		}
+	}
+}
+
+const spi string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/viewingpolicy/CH61/MASE_ID/399191745/start" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
+  <SignalPointInsertion xmlns="urn:scte:224:action" offset="PT0S" segmentationTypeId="48" segmentationUpidType="1" segmentationUpid="399191745"/>
+</ViewingPolicy>`
+
+const spd string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="deletion" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
+  <SignalPointDeletion xmlns="urn:scte:224:action">True</SignalPointDeletion>
+</ViewingPolicy>`
+
+const content string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="deletion" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
+  <Content xmlns="urn:scte:224:action">CH65</Content>
+</ViewingPolicy>`
+
+const random string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="deletion" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
+  <Random><Bunch>Of Data</Bunch></Random>
+</ViewingPolicy>`
+
+func TestRandomAction(t *testing.T) {
+	var vpol *ViewingPolicy
+	err := xml.Unmarshal([]byte(random), &vpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling viewingpolicys %v", err)
+		t.FailNow()
+	}
+
+	roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+	if nil != rerr {
+		t.Error(rerr)
+	} else {
+		t.Log(string(roundtrip))
+	}
+}
+
+func TestContentAction(t *testing.T) {
+	var vpol *ViewingPolicy
+	err := xml.Unmarshal([]byte(content), &vpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling viewingpolicys %v", err)
+		t.FailNow()
+	}
+
+	roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+	if nil != rerr {
+		t.Error(rerr)
+	} else {
+		t.Log(string(roundtrip))
+	}
+}
+
+func TestSignalPointDeletion(t *testing.T) {
+	var vpol *ViewingPolicy
+	err := xml.Unmarshal([]byte(spd), &vpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling viewingpolicys %v", err)
+		t.FailNow()
+	}
+
+	action := vpol.SignalPointDeletion
+
+	if nil != action {
+		if "True" != action.SignalPointDeletion {
+			t.Error("Expected signalPointDeletion to be True, but was:", action.SignalPointDeletion)
+		}
+	} else {
+		t.Error("expected non-nil signalPointDeletion")
+	}
+
+	roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+	if nil != rerr {
+		t.Error(rerr)
+	} else {
+		t.Log(string(roundtrip))
+	}
+}
+
+func TestSignalPointInsertion(t *testing.T) {
+	var vpol *ViewingPolicy
+	err := xml.Unmarshal([]byte(spi), &vpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling viewingpolicys %v", err)
+		t.FailNow()
+	}
+	action := vpol.SignalPointInsertion
+	if nil == action {
+		t.Error("expected non-nil signalPointInsertion")
+	} else {
+		if action.Offset.GoDuration() != 0 {
+			t.Error("expected zero offset rather than" + action.Offset)
+		}
+
+		if nil != action.SegmentationUpidType {
+			if *action.SegmentationUpidType != 1 {
+				t.Error("expected SegmentationUpid of 1 rather than", *action.SegmentationUpidType)
+			}
+		} else {
+			t.Error("expected non-nil SegmentationUpid")
+		}
+		if action.SegmentationUpid != "399191745" {
+			t.Error("expected SegmentationUpid of \"399191745\" rather than" + action.SegmentationUpid)
+		}
+		if nil != action.SegmentationTypeId {
+			if *action.SegmentationTypeId != 48 {
+				t.Error("expected segmentationTypeId of 48 rather than", *action.SegmentationTypeId)
+			}
+		} else {
+			t.Error("expected non-nil segmentationTypeId")
+		}
+		roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+		if nil != rerr {
+			t.Error(rerr)
+		} else {
+			t.Log(string(roundtrip))
 		}
 	}
 }
