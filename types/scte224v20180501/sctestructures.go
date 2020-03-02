@@ -183,9 +183,29 @@ type Policy struct {
 //Table 12
 type ViewingPolicy struct {
 	ReusableType
-	XMLName        xml.Name      `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
-	Audience       *Audience     `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
-	ActionProperty []AnyProperty `xml:",any" json:"actionProperty,omitempty"`
+	XMLName              xml.Name                    `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
+	Audience             *Audience                   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
+	SignalPointDeletion  *SignalPointDeletionAction  `xml:"urn:scte:224:action SignalPointDeletion,omitempty" json:"signalPointDeletion,omitempty"`
+	SignalPointInsertion *SignalPointInsertionAction `xml:"urn:scte:224:action SignalPointInsertion,omitempty" json:"signalPointInsertion,omitempty"`
+	Content              *ContentAction              `xml:"urn:scte:224:action Content,omitempty" json:"content,omitempty"`
+	ActionProperty       []AnyProperty               `xml:",any" json:"actionProperty,omitempty"`
+}
+
+type ContentAction struct {
+	XMLName xml.Name `xml:"urn:scte:224:action Content" json:"-"`
+	Content string   `xml:",chardata" json:"data,omitempty"`
+}
+
+type SignalPointDeletionAction struct {
+	XMLName             xml.Name `xml:"urn:scte:224:action SignalPointDeletion" json:"-"`
+	SignalPointDeletion string   `xml:",chardata" json:"data,omitempty"`
+}
+
+type SignalPointInsertionAction struct {
+	Offset               Duration `xml:"offset,attr,omitempty" json:"offset,omitempty"`
+	SegmentationTypeId   *uint    `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
+	SegmentationUpidType *uint    `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
+	SegmentationUpid     string   `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
 }
 
 //Table 13
