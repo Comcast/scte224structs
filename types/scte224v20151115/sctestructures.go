@@ -11,7 +11,7 @@ import (
 
 const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20151115.xsd"
 
-// Structs for SCTE 224 2018 ESNI Objects.
+// Structs for SCTE 224 2015 ESNI Objects.
 // Table 3
 type IdentifiableType struct {
 	Id          string     `xml:"id,attr,omitempty"`
@@ -20,7 +20,7 @@ type IdentifiableType struct {
 	XMLBase     string     `xml:"xml:base,attr,omitempty"`
 	AltIDs      []*AltID   `xml:"http://www.scte.org/schemas/224/2015 AltID,omitempty"`
 	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Metadata,omitempty"`
-	Ext         *Metadata  `xml:"http://www.scte.org/schemas/224/2015 Ext,omitempty"`
+	Ext         *Ext       `xml:"http://www.scte.org/schemas/224/2015 Ext,omitempty"`
 }
 
 //Table 5
@@ -60,7 +60,27 @@ type MediaPoint struct {
 }
 
 type Metadata struct {
-	InnerXml string `xml:",innerxml"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Metadata" json:"-"`
+	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+}
+
+type Ext struct {
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Ext"`
+	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+}
+
+type NamespaceCleaner string
+
+func (nc NamespaceCleaner) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{}, nil
+}
+
+type Any struct {
+	XMLName xml.Name `json:"xmlname"`
+	// mapping xmlns to a field that will avoid marshalling a duplicate namespace
+	Namespace  NamespaceCleaner `xml:"xmlns,attr"`
+	Attributes []xml.Attr       `xml:",any,attr"`
+	Value      string           `xml:",innerxml" json:"value"`
 }
 
 type Duration string
@@ -123,7 +143,7 @@ type Apply struct {
 //Table 9
 type Remove struct {
 	XMLName xml.Name `xml:"http://www.scte.org/schemas/224/2015 Remove"`
-	Policy  *Policy  `xml:"http://www.scte.org/schemas/224/2015 Policy",omitempty`
+	Policy  *Policy  `xml:"http://www.scte.org/schemas/224/2015 Policy,omitempty"`
 }
 
 //Table 8
