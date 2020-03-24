@@ -208,7 +208,7 @@ type ViewingPolicy struct {
 	SignalPointDeletion  *SignalPointDeletionAction  `xml:"urn:scte:224:action SignalPointDeletion,omitempty" json:"signalPointDeletion,omitempty"`
 	SignalPointInsertion *SignalPointInsertionAction `xml:"urn:scte:224:action SignalPointInsertion,omitempty" json:"signalPointInsertion,omitempty"`
 	Content              *ContentAction              `xml:"urn:scte:224:action Content,omitempty" json:"content,omitempty"`
-	ActionProperty       []AnyProperty               `xml:",any" json:"actionProperty,omitempty"`
+	ActionProperty       []Any                       `xml:",any" json:"actionProperty,omitempty"`
 }
 
 type ContentAction struct {
@@ -231,15 +231,10 @@ type SignalPointInsertionAction struct {
 //Table 13
 type Audience struct {
 	ReusableType
-	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224 Audience" json:"-"`
-	Match            Match         `xml:"match,attr,omitempty" json:"match,omitempty"`
-	Audiences        []*Audience   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
-	AudienceProperty []AnyProperty `xml:",any" json:"audienceProperty,omitempty"`
-}
-
-type AnyProperty struct {
-	XMLName xml.Name `json:"-"`
-	Data    string   `xml:",innerxml" json:"data,omitempty"`
+	XMLName          xml.Name    `xml:"http://www.scte.org/schemas/224 Audience" json:"-"`
+	Match            Match       `xml:"match,attr,omitempty" json:"match,omitempty"`
+	Audiences        []*Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
+	AudienceProperty []Any       `xml:",any" json:"audienceProperty,omitempty"`
 }
 
 //********************* Results Types *************************//

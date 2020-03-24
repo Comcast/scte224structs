@@ -31,7 +31,7 @@ const viewingpolicy string = `
 
 type testViewingPolicy struct {
 	ReusableType
-	ActionProperty []*AnyProperty `xml:"http://www.scte.org/schemas/224 Any,omitempty" json:"anys,omitempty"`
+	ActionProperty []*Any         `xml:"http://www.scte.org/schemas/224 Any,omitempty" json:"anys,omitempty"`
 	XMLName        xml.Name       `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
 	Audience       *Audience      `xml:"http://www.scte.org/schemas/224 Audience" json:"audience,omitempty"`
 	FastForward    string         `xml:"FastForward,omitempty" json:"fastForward,omitempty"`
