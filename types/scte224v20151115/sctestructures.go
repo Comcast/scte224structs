@@ -178,26 +178,21 @@ type Policy struct {
 	ViewingPolicys []*ViewingPolicy `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy,omitempty"`
 }
 
-type AnyProperty struct {
-	XMLName xml.Name
-	Data    string `xml:",innerxml"`
-}
-
 //Table 12
 type ViewingPolicy struct {
 	ReusableType
-	XMLName        xml.Name      `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy"`
-	Audience       *Audience     `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
-	ActionProperty []AnyProperty `xml:",any"`
+	XMLName        xml.Name  `xml:"http://www.scte.org/schemas/224/2015 ViewingPolicy"`
+	Audience       *Audience `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
+	ActionProperty []Any     `xml:",any"`
 }
 
 //Table 13
 type Audience struct {
 	ReusableType
-	XMLName          xml.Name      `xml:"http://www.scte.org/schemas/224/2015 Audience"`
-	Match            Match         `xml:"match,attr,omitempty"`
-	Audiences        []*Audience   `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
-	AudienceProperty []AnyProperty `xml:",any"`
+	XMLName          xml.Name    `xml:"http://www.scte.org/schemas/224/2015 Audience"`
+	Match            Match       `xml:"match,attr,omitempty"`
+	Audiences        []*Audience `xml:"http://www.scte.org/schemas/224/2015 Audience,omitempty"`
+	AudienceProperty []Any       `xml:",any"`
 }
 
 //********************* Results Types *************************//

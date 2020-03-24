@@ -60,7 +60,7 @@ func DowngradeAudience(audience scte224.Audience) scte224_2015.Audience {
 	var dst scte224_2015.Audience
 	dst.XMLName = audience.XMLName
 	for _, audienceProp := range audience.AudienceProperty {
-		dst.AudienceProperty = append(dst.AudienceProperty, scte224_2015.AnyProperty{XMLName: audienceProp.XMLName, Data: audienceProp.Data})
+		dst.AudienceProperty = append(dst.AudienceProperty, scte224_2015.Any{XMLName: audienceProp.XMLName, Value: audienceProp.Value})
 	}
 	dst.Match = scte224_2015.Match(audience.Match)
 	dst.ReusableType = DowngradeReusableType(audience.ReusableType)
@@ -71,21 +71,21 @@ func DowngradeViewingPolicy(vp scte224.ViewingPolicy) scte224_2015.ViewingPolicy
 	var dst scte224_2015.ViewingPolicy
 	dst.XMLName = vp.XMLName
 	if content := vp.Content; nil != content {
-		dst.ActionProperty = append(dst.ActionProperty, scte224_2015.AnyProperty{
+		dst.ActionProperty = append(dst.ActionProperty, scte224_2015.Any{
 			XMLName: content.XMLName,
-			Data:    content.Content,
+			Value:   content.Content,
 		})
 	}
 	if deletion := vp.SignalPointDeletion; nil != deletion {
-		dst.ActionProperty = append(dst.ActionProperty, scte224_2015.AnyProperty{
+		dst.ActionProperty = append(dst.ActionProperty, scte224_2015.Any{
 			XMLName: deletion.XMLName,
-			Data:    deletion.SignalPointDeletion,
+			Value:   deletion.SignalPointDeletion,
 		})
 	}
 	// Downgrading signal point insertion is not supported
 
 	for _, actionProp := range vp.ActionProperty {
-		dst.ActionProperty = append(dst.ActionProperty, scte224_2015.AnyProperty{XMLName: actionProp.XMLName, Data: actionProp.Data})
+		dst.ActionProperty = append(dst.ActionProperty, scte224_2015.Any{XMLName: actionProp.XMLName, Value: actionProp.Value})
 	}
 	if vp.Audience != nil {
 		downgradedAudience := DowngradeAudience(*vp.Audience)
