@@ -15,11 +15,35 @@ func DowngradeIdentifiableType(identifiableType scte224.IdentifiableType) scte22
 	}
 	dst.Description = identifiableType.Description
 	if identifiableType.Ext != nil {
-		dst.Ext = &scte224_2015.Metadata{InnerXml: identifiableType.Ext.InnerXml}
+		nodes := make([]scte224_2015.Any, len(identifiableType.Ext.Nodes))
+		for j, node := range identifiableType.Ext.Nodes {
+			nodes[j] = scte224_2015.Any{
+				XMLName:    node.XMLName,
+				Attributes: node.Attributes,
+				Value:      node.Value,
+			}
+		}
+		dst.Ext = &scte224_2015.Ext{
+			XMLName: identifiableType.Ext.XMLName,
+			Nodes:   nodes,
+		}
 	}
 	if identifiableType.Metadata != nil {
-		dst.Metadata = &scte224_2015.Metadata{InnerXml: identifiableType.Metadata.InnerXml}
+		nodes := make([]scte224_2015.Any, len(identifiableType.Metadata.Nodes))
+		for j, node := range identifiableType.Metadata.Nodes {
+			nodes[j] = scte224_2015.Any{
+				XMLName:    node.XMLName,
+				Attributes: node.Attributes,
+				Value:      node.Value,
+			}
+		}
+
+		dst.Metadata = &scte224_2015.Metadata{
+			XMLName: identifiableType.Metadata.XMLName,
+			Nodes:   nodes,
+		}
 	}
+
 	dst.LastUpdated = identifiableType.LastUpdated
 	dst.XMLBase = identifiableType.XMLBase
 	return dst

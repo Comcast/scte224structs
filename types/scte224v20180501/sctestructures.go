@@ -20,7 +20,7 @@ type IdentifiableType struct {
 	XMLBase     string     `xml:"xml:base,attr,omitempty" json:"-"`
 	AltIDs      []*AltID   `xml:"http://www.scte.org/schemas/224 AltID,omitempty" json:"altIDs,omitempty"`
 	Metadata    *Metadata  `xml:"http://www.scte.org/schemas/224 Metadata,omitempty" json:"metadata,omitempty"`
-	Ext         *Metadata  `xml:"http://www.scte.org/schemas/224 Ext,omitempty" json:"ext,omitempty"`
+	Ext         *Ext       `xml:"http://www.scte.org/schemas/224 Ext,omitempty" json:"ext,omitempty"`
 }
 
 //Table 5
@@ -71,7 +71,27 @@ func (mp *MediaPoint) GetOrder() uint {
 }
 
 type Metadata struct {
-	InnerXml string `xml:",innerxml" json:"innerXml,omitempty"`
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Metadata" json:"-"`
+	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+}
+
+type Ext struct {
+	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Ext"`
+	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+}
+
+type NamespaceCleaner string
+
+func (nc NamespaceCleaner) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{}, nil
+}
+
+type Any struct {
+	XMLName xml.Name `json:"xmlname"`
+	// mapping xmlns to a field that will avoid marshalling a duplicate namespace
+	Namespace  NamespaceCleaner `xml:"xmlns,attr"`
+	Attributes []xml.Attr       `xml:",any,attr"`
+	Value      string           `xml:",innerxml" json:"value"`
 }
 
 type Duration string

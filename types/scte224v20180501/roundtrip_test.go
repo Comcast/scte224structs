@@ -65,3 +65,73 @@ func TestRoundtrip(t *testing.T) {
 		t.Fail()
 	}
 }
+
+const topLevelNamspaces = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Media source="NBCS_BOSTON" id="nbcuni.com/media/NBCS_BOSTON_ALT/BROADCAST" description="NBCS_BOSTON_ALT" lastUpdated="2020-03-19T08:53:41.951Z" xmlns="http://www.scte.org/schemas/224" xmlns:lrm="https://lrm.aor.theplatform.com/lrm/schemas/esni/224" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <MediaPoint source="NBCS_BOSTON" order="1" effective="2020-03-18T13:00:00Z" expires="2020-03-18T23:00:00Z" id="nbcuni.com/media/NBCS_BOSTON_ALT/program/00044MA000000037610T0318201400/BROADCAST/start" description="Zolak and Bertrand" lastUpdated="2020-03-19T08:53:41.951Z">
+    <AltID>SH029993960000</AltID>
+    <Metadata>
+      <lrm:MetadataDetail name="ScheduledStart" type="string" provider="nbc">2020-03-18T14:00:00Z</lrm:MetadataDetail>
+      <lrm:MetadataDetail name="ScheduledEnd" type="string" provider="nbc">2020-03-18T18:00:00Z</lrm:MetadataDetail>
+      <lrm:MetadataDetail name="ScheduledAiringID" type="string" provider="nbc">00044MA000000037610T0318201400</lrm:MetadataDetail>
+      <lrm:MetadataDetail name="Sport" type="string" provider="nbc">Sports talk</lrm:MetadataDetail>
+    </Metadata>
+    <Apply>
+      <Policy xlink:href="nbcuni.com/policy/NBCS_BOSTON_ALT/cleared"/>
+    </Apply>
+    <MatchSignal match="ANY">
+      <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=16]/SegmentationUpid[@segmentationUpidType=1 and text()='00044MA000000037610T0318201400']</Assert>
+      <Assert>/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=1]/SegmentationUpid[@segmentationUpidType=1 and text()='00044MA000000037610T0318201400']</Assert>
+    </MatchSignal>
+  </MediaPoint>
+</Media>`
+
+const inlinedNamespaces = `<Media xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/media/NBCS_BOSTON_ALT/BROADCAST" description="NBCS_BOSTON_ALT" lastUpdated="2020-03-19T08:53:41.951Z" source="NBCS_BOSTON">
+  <MediaPoint xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/media/NBCS_BOSTON_ALT/program/00044MA000000037610T0318201400/BROADCAST/start" description="Zolak and Bertrand" lastUpdated="2020-03-19T08:53:41.951Z" effective="2020-03-18T13:00:00Z" expires="2020-03-18T23:00:00Z" source="NBCS_BOSTON" order="1">
+    <AltID xmlns="http://www.scte.org/schemas/224">SH029993960000</AltID>
+    <Metadata xmlns="http://www.scte.org/schemas/224">
+      <MetadataDetail xmlns="https://lrm.aor.theplatform.com/lrm/schemas/esni/224" name="ScheduledStart" type="string" provider="nbc">2020-03-18T14:00:00Z</MetadataDetail>
+      <MetadataDetail xmlns="https://lrm.aor.theplatform.com/lrm/schemas/esni/224" name="ScheduledEnd" type="string" provider="nbc">2020-03-18T18:00:00Z</MetadataDetail>
+      <MetadataDetail xmlns="https://lrm.aor.theplatform.com/lrm/schemas/esni/224" name="ScheduledAiringID" type="string" provider="nbc">00044MA000000037610T0318201400</MetadataDetail>
+      <MetadataDetail xmlns="https://lrm.aor.theplatform.com/lrm/schemas/esni/224" name="Sport" type="string" provider="nbc">Sports talk</MetadataDetail>
+    </Metadata>
+    <Apply xmlns="http://www.scte.org/schemas/224">
+      <Policy xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/policy/NBCS_BOSTON_ALT/cleared"></Policy>
+    </Apply>
+    <MatchSignal xmlns="http://www.scte.org/schemas/224" match="ANY">
+      <Assert xmlns="http://www.scte.org/schemas/224">/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=16]/SegmentationUpid[@segmentationUpidType=1 and text()=&#39;00044MA000000037610T0318201400&#39;]</Assert>
+      <Assert xmlns="http://www.scte.org/schemas/224">/SpliceInfoSection/SegmentationDescriptor[@segmentationTypeId=1]/SegmentationUpid[@segmentationUpidType=1 and text()=&#39;00044MA000000037610T0318201400&#39;]</Assert>
+    </MatchSignal>
+  </MediaPoint>
+</Media>`
+
+func TestMetadataNamespace(t *testing.T) {
+	decoder := xml.NewDecoder(strings.NewReader(topLevelNamspaces))
+	var metaScte Media
+	decodeErr := decoder.Decode(&metaScte)
+	if nil != decodeErr {
+		t.Log(decodeErr)
+		t.FailNow()
+	}
+	if metaScte.Source != "NBCS_BOSTON" {
+		t.Log(metaScte.Source, "should have been \"NBCS_BOSTON\"")
+		t.Fail()
+	}
+	if 1 != len(metaScte.MediaPoints) {
+		t.Log("Expected just one MediaPoint")
+		t.Fail()
+	}
+
+	pretty, marshalErr := xml.MarshalIndent(metaScte, "", "  ")
+	if nil != marshalErr {
+		t.Log(marshalErr)
+		t.FailNow()
+	}
+	roundtrip := string(pretty)
+	if inlinedNamespaces != roundtrip {
+		t.Log(roundtrip)
+		t.Log("did not match")
+		t.Log(inlinedNamespaces)
+		t.Fail()
+	}
+}
