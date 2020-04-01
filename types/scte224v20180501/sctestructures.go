@@ -2,6 +2,7 @@ package scte224v20180501
 
 import (
 	"encoding/xml"
+	"github.com/Comcast/scte224structs/types/scte224v20180501/adi30"
 	"log"
 	"regexp"
 	"strconv"
@@ -71,8 +72,9 @@ func (mp *MediaPoint) GetOrder() uint {
 }
 
 type Metadata struct {
-	XMLName xml.Name `xml:"http://www.scte.org/schemas/224 Metadata" json:"-"`
-	Nodes   []Any    `xml:",any" json:"values,omitempty"`
+	XMLName xml.Name     `xml:"http://www.scte.org/schemas/224 Metadata" json:"-"`
+	ADI30   *adi30.ADI30 `xml:"http://www.scte.org/schemas/236/2017/core ADI3" json:"-"`
+	Nodes   []Any        `xml:",any" json:"values,omitempty"`
 }
 
 type Ext struct {
