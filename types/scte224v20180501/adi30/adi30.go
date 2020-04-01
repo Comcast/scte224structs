@@ -22,7 +22,7 @@ type ADI30 struct {
 		Xsi     string   `xml:"http://www.w3.org/2001/XMLSchema-instance xsi,attr" json:"-"`
 		//Xmlns   string   `xml:"xmlns,attr" json:"-"`
 	*/
-	Asset []*Asset `xml:"http://www.scte.org/schemas/236/2017/core Asset,omitempty" json:"asset,omitempty"`
+	Asset []*Asset `xml:"Asset,omitempty" json:"asset,omitempty"`
 	//Metadata *Metadata `xml:"Metadata"`
 }
 
@@ -57,9 +57,9 @@ type AMS struct {
 // Access to the contents of the "Value" attribute is provided via ValueAttr.
 type AppData struct {
 	XMLName   xml.Name `xml:"App_Data"`
-	App       string   `xml:"app,attr,omitempty"`
-	Name      string   `xml:"name,attr,omitempty"`
-	ValueAttr string   `xml:"value,attr,omitempty"`
+	App       string   `xml:"App,attr,omitempty"`
+	Name      string   `xml:"Name,attr,omitempty"`
+	ValueAttr string   `xml:"Value,attr,omitempty"`
 	//Value     string   `xml:",chardata"`
 }
 
@@ -76,11 +76,11 @@ type Asset struct {
 	EndDateTime          string `xml:"endDateTime,attr"`
 	LastModifiedDateTime string `xml:"lastModifiedDateTime,attr"`
 
-	AlternateId                *altId          `xml:"http://www.scte.org/schemas/236/2017/core AlternateId,omitempty"`
-	ProviderQAContact          string          `xml:"http://www.scte.org/schemas/236/2017/core ProviderQAContact,omitempty"`
-	AssetName                  *deprecAndValue `xml:"http://www.scte.org/schemas/236/2017/core AssetName,omitempty"`
-	Provider                   string          `xml:"http://www.scte.org/schemas/236/2017/core Provider,omitempty"`
-	Description                *deprecAndValue `xml:"http://www.scte.org/schemas/236/2017/core Description,omitempty"`
+	AlternateId                *altId          `xml:"AlternateId,omitempty"`
+	ProviderQAContact          string          `xml:"ProviderQAContact,omitempty"`
+	AssetName                  *deprecAndValue `xml:"AssetName,omitempty"`
+	Provider                   string          `xml:"Provider,omitempty"`
+	Description                *deprecAndValue `xml:"Description,omitempty"`
 	OfrPres                    *presentation   `xml:"http://www.scte.org/schemas/236/2017/offer Presentation,omitempty"`
 	PromotionalContentGroupRef *UriId          `xml:"http://www.scte.org/schemas/236/2017/offer PromotionalContentGroupRef,omitempty"`
 	ProviderContentTier        string          `xml:"http://www.scte.org/schemas/236/2017/offer ProviderContentTier,omitempty"`
@@ -89,7 +89,7 @@ type Asset struct {
 	TermsRef                   *UriId          `xml:"http://www.scte.org/schemas/236/2017/offer TermsRef,omitempty"`
 	ContentGroupRef            *UriId          `xml:"http://www.scte.org/schemas/236/2017/offer ContentGroupRef,omitempty"`
 
-	Ext              *Ext      `xml:"http://www.scte.org/schemas/236/2017/core Ext,omitempty"`
+	Ext              *Ext      `xml:"Ext,omitempty"`
 	LocalizableTitle *LocTitle `xml:"http://www.scte.org/schemas/236/2017/title LocalizableTitle,omitempty"`
 
 	// LocalizableTitle *title `xml:"LocalizableTitle,omitempty"`
@@ -135,8 +135,8 @@ type UriId struct {
 }
 
 type ExtAppData struct {
-	Name  string `xml:"name,attr"`
-	Value string `xml:"value,attr"`
+	Name  string `xml:"Name,attr"`
+	Value string `xml:"Value,attr"`
 }
 
 type Rating struct {
