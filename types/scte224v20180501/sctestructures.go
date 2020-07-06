@@ -135,10 +135,6 @@ func ConvertDuration(xmlDuration string) (duration time.Duration) {
 	return duration
 }
 
-func ToDuration(dur time.Duration) Duration {
-	return Duration("P" + strings.ToUpper(dur.Round(time.Second).String()))
-}
-
 type AltID struct {
 	XMLName     xml.Name `xml:"http://www.scte.org/schemas/224 AltID" json:"-"`
 	Description string   `xml:"description,attr,omitempty" json:"description,omitempty"`
@@ -224,10 +220,13 @@ type SignalPointDeletionAction struct {
 }
 
 type SignalPointInsertionAction struct {
-	Offset               Duration `xml:"offset,attr,omitempty" json:"offset,omitempty"`
-	SegmentationTypeId   *uint    `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
-	SegmentationUpidType *uint    `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
-	SegmentationUpid     string   `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
+	Offset               Duration   `xml:"offset,attr,omitempty" json:"offset,omitempty"`
+	SegmentationTypeId   *uint      `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
+	SegmentationUpidType *uint      `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
+	SegmentationUpid     string     `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
+	RepeatInterval       Duration   `xml:"repeatInterval,attr,omitempty" json:"repeatInterval,omitempty"`
+	RepeatStart          *time.Time `xml:"repeatStart,attr,omitempty" json:"repeatStart,omitempty"`
+	RepeatStop           *time.Time `xml:"repeatStop,attr,omitempty" json:"repeatStop,omitempty"`
 }
 
 //Table 13
