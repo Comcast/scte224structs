@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"testing"
+	"time"
 )
 
 const viewingpolicy string = `
@@ -127,7 +128,7 @@ func TestViewingPolicy2018(t *testing.T) {
 
 const spi string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/viewingpolicy/CH61/MASE_ID/399191745/start" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
   <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
-  <SignalPointInsertion xmlns="urn:scte:224:action" offset="PT0S" segmentationTypeId="48" segmentationUpidType="1" segmentationUpid="399191745"/>
+  <SignalPointInsertion xmlns="urn:scte:224:action" offset="PT0S" segmentationTypeId="48" segmentationUpidType="1" segmentationUpid="399191745" repeatInterval="PT1M15S" repeatStart="2020-02-27T11:00:00-08:00" repeatStop="2020-02-27T11:15:00-08:00"/>
 </ViewingPolicy>`
 
 const spd string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="deletion" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
@@ -234,6 +235,14 @@ func TestSignalPointInsertion(t *testing.T) {
 			}
 		} else {
 			t.Error("expected non-nil segmentationTypeId")
+		}
+		repeatInterval := action.RepeatInterval.GoDuration()
+		if time.Second*75 != repeatInterval {
+			t.Error("expected a 75 second interval rather than", repeatInterval)
+		}
+		totalRepeatTime := action.RepeatStop.Sub(*action.RepeatStart)
+		if time.Minute*15 != totalRepeatTime {
+			t.Error("expected repeats to last 15 minutes rather than", totalRepeatTime)
 		}
 		roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
 		if nil != rerr {
