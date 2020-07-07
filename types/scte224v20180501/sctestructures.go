@@ -220,6 +220,10 @@ type SignalPointDeletionAction struct {
 }
 
 type SignalPointInsertionAction struct {
+	SignalPoints []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
+}
+
+type SignalPoint struct {
 	Offset               Duration   `xml:"offset,attr,omitempty" json:"offset,omitempty"`
 	SegmentationTypeId   *uint      `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
 	SegmentationUpidType *uint      `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`

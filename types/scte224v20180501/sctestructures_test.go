@@ -128,7 +128,9 @@ func TestViewingPolicy2018(t *testing.T) {
 
 const spi string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="nbcuni.com/viewingpolicy/CH61/MASE_ID/399191745/start" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
   <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
-  <SignalPointInsertion xmlns="urn:scte:224:action" offset="PT0S" segmentationTypeId="48" segmentationUpidType="1" segmentationUpid="399191745" repeatInterval="PT1M15S" repeatStart="2020-02-27T11:00:00-08:00" repeatStop="2020-02-27T11:15:00-08:00"/>
+  <SignalPointInsertion xmlns="urn:scte:224:action">
+    <SignalPoint xmlns="urn:scte:224:action" offset="PT0S" segmentationTypeId="48" segmentationUpidType="1" segmentationUpid="399191745" repeatInterval="PT1M15S" repeatStart="2020-02-27T11:00:00-08:00" repeatStop="2020-02-27T11:15:00-08:00"/>
+  </SignalPointInsertion>
 </ViewingPolicy>`
 
 const spd string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="deletion" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
@@ -215,34 +217,43 @@ func TestSignalPointInsertion(t *testing.T) {
 	if nil == action {
 		t.Error("expected non-nil signalPointInsertion")
 	} else {
-		if action.Offset.GoDuration() != 0 {
-			t.Error("expected zero offset rather than" + action.Offset)
-		}
+		if len(action.SignalPoints) == 0 {
+			t.Error("expected SignalPoints")
+		} else {
+			sp := action.SignalPoints[0]
+			if nil == sp {
+				t.Error("expected non-nil signalPoint")
+			} else {
+				if sp.Offset.GoDuration() != 0 {
+					t.Error("expected zero offset rather than" + sp.Offset)
+				}
 
-		if nil != action.SegmentationUpidType {
-			if *action.SegmentationUpidType != 1 {
-				t.Error("expected SegmentationUpid of 1 rather than", *action.SegmentationUpidType)
+				if nil != sp.SegmentationUpidType {
+					if *sp.SegmentationUpidType != 1 {
+						t.Error("expected SegmentationUpid of 1 rather than", *sp.SegmentationUpidType)
+					}
+				} else {
+					t.Error("expected non-nil SegmentationUpid")
+				}
+				if sp.SegmentationUpid != "399191745" {
+					t.Error("expected SegmentationUpid of \"399191745\" rather than" + sp.SegmentationUpid)
+				}
+				if nil != sp.SegmentationTypeId {
+					if *sp.SegmentationTypeId != 48 {
+						t.Error("expected segmentationTypeId of 48 rather than", *sp.SegmentationTypeId)
+					}
+				} else {
+					t.Error("expected non-nil segmentationTypeId")
+				}
+				repeatInterval := sp.RepeatInterval.GoDuration()
+				if time.Second*75 != repeatInterval {
+					t.Error("expected a 75 second interval rather than", repeatInterval)
+				}
+				totalRepeatTime := sp.RepeatStop.Sub(*sp.RepeatStart)
+				if time.Minute*15 != totalRepeatTime {
+					t.Error("expected repeats to last 15 minutes rather than", totalRepeatTime)
+				}
 			}
-		} else {
-			t.Error("expected non-nil SegmentationUpid")
-		}
-		if action.SegmentationUpid != "399191745" {
-			t.Error("expected SegmentationUpid of \"399191745\" rather than" + action.SegmentationUpid)
-		}
-		if nil != action.SegmentationTypeId {
-			if *action.SegmentationTypeId != 48 {
-				t.Error("expected segmentationTypeId of 48 rather than", *action.SegmentationTypeId)
-			}
-		} else {
-			t.Error("expected non-nil segmentationTypeId")
-		}
-		repeatInterval := action.RepeatInterval.GoDuration()
-		if time.Second*75 != repeatInterval {
-			t.Error("expected a 75 second interval rather than", repeatInterval)
-		}
-		totalRepeatTime := action.RepeatStop.Sub(*action.RepeatStart)
-		if time.Minute*15 != totalRepeatTime {
-			t.Error("expected repeats to last 15 minutes rather than", totalRepeatTime)
 		}
 		roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
 		if nil != rerr {

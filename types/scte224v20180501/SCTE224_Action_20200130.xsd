@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:scte:224:action" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:scte:224:action" elementFormDefault="qualified">
+    <xs:element name="Content" type="xs:anyURI">
+        <xs:annotation>
+            <xs:documentation>alternate content or slate.  Use "urn:scte:224:action:blackout" as the value to indicate that the underlying content must be blacked out, but there is no alternative content to show.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="MaxResolution" type="xs:integer">
+        <xs:annotation>
+            <xs:documentation>Maximum allowed vertical playback resolution. Typical values are 480 for SD content and 720 or 1080 for HD or 2160 or 4320 for UHD.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Drm" type="xs:token">
+        <xs:annotation>
+            <xs:documentation>DRM token</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Revalidate" type="xs:duration">
+        <xs:annotation>
+            <xs:documentation>Frequency which client must revalidate policy</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="MaxNumberConcurrentClient" type="xs:integer">
+        <xs:annotation>
+            <xs:documentation>Maximum allowed concurrent clients (from subscriber)</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="FastForward" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Fast forward allowed (trickmodeRestrictios?)</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Rewind" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Rewind allowed (trickmodeRestrictios?)</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Resume" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Resuming of session allowed</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="HDMIBlocked" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Disallow use of HDMI</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="DownloadBlocked" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Disallow download (local storage)</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="MirrorBlocked" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Disallow mirroring</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PreviewPeriod" type="xs:duration">
+        <xs:annotation>
+            <xs:documentation>Preview period from start of program (can view even if not entitled)</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SubscriberViewLimit" type="xs:string">
+        <xs:annotation>
+            <xs:documentation>A period of time and (optional) maximum number of views over the period of time allowed per subscriber. The separator shall be a "," between the period start date, period end date and maximum views.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <!--
+      <xs:element name="PlayCount" type="xs:integer" />
+      <xs:element name="Activation" type="xs:dateTime" />
+      <xs:element name="Expiration" type="xs:dateTime" />
+  -->
+    <xs:element name="AnalogProtectionSystem" type="xs:integer">
+        <xs:annotation>
+            <xs:documentation>An integer representing the value of APS.
+                0 – Analog protection off
+                1 – AGC process on, split burst off
+                2 – AGC process on, 2-line split burst on
+                3 – AGC process on, 4-line split burst on</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="EncryptionModeIndicator" type="xs:integer">
+        <xs:annotation>
+            <xs:documentation>An integer representing the value of EMI.
+                0 – Copying is permitted
+                1 – No further copying is permitted
+                2 – One generation copy is permitted
+                3 – Copying is prohibited</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="ConstrainedImageTrigger" type="xs:integer">
+        <xs:annotation>
+            <xs:documentation>
+                An integer representing the value of CIT.
+                0 – No image constraint asserted
+                1 – Image constraint required</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="CGMS_A" type="xs:integer">
+        <xs:annotation>
+            <xs:documentation>
+                An integer representing the value of the Copy Generation Management System (Analog).
+                0 – Copying is permitted without restriction
+                1 – No further copying permitted
+                2 – One generation of copies may be made
+                3 – No copying is permitted</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="Capture">
+        <xs:annotation>
+            <xs:documentation>This element defines a specific use of content that has been captured off of the live feed. There may be multiple Capture elements, by they can not have overlapping availability windows. Care should also be taken to insure that the content is not Reap(ed) before a reasonable grace period after the last window has closed.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="StartWindow">
+                    <xs:annotation>
+                        <xs:documentation>Playback window start for this capture. Can be one of:
+                            - An exact UTC time
+                            - A duration from the start time of the asset (based on the Mediapoint or signal)
+                            - A percentage of the content duration from the start time of the asset (based on the Mediapoint or signal). For the Start message this would typically be 0 for the start of air or 100 for the actual finish time of the content. Values under 100 require the duration to be known ahead of time.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="Absolute" type="xs:dateTime"/>
+                            <xs:element name="Offset" type="xs:duration"/>
+                            <xs:element name="Percentage" type="xs:unsignedInt"/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="StopWindow">
+                    <xs:annotation>
+                        <xs:documentation>Playback window stop for this capture. Streams can not be started after this time, but may be playable up to the Reap time if specified. Can be one of:
+                            - An exact UTC time
+                            - A duration from the start time of the asset (based on the Mediapoint or signal)
+                            - A percentage of the content duration from the start time of the asset (based on the Mediapoint or signal). For the Start message this would typically be 0 for the start of air or 100 for the actual finish time of the content.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="Absolute" type="xs:dateTime"/>
+                            <xs:element name="Offset" type="xs:duration"/>
+                            <xs:element name="Percentage" type="xs:unsignedInt"/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="Reap">
+                    <xs:annotation>
+                        <xs:documentation>At this time the content is to be removed from the server and is no longer playable. If multiple Capture elements are used this should only be set once beyond the last playout time. This may be an absolute time or a duration after the StopWindow. That duration may be expressed as a specific value or percent of the content length.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="Absolute" type="xs:dateTime"/>
+                            <xs:element name="Offset" type="xs:duration"/>
+                            <xs:element name="Percentage" type="xs:unsignedInt"/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" name="PrerollSlate">
+                    <xs:annotation>
+                        <xs:documentation>Content item that is to be the first item that plays out to the viewer. It needs to be in front of any other content item including advertisements.</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element ref="Content"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element minOccurs="0" ref="PrerollDAI"/>
+                <xs:element minOccurs="0" ref="MidrollDAI"/>
+                <xs:element minOccurs="0" ref="PostrollDAI"/>
+                <xs:element minOccurs="0" ref="FastForward"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="PrerollDAI" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Can insert a preroll dynamic ad even if not signaled.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="MidrollDAI" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Midroll Dynamic Ad Insertion as specified by signals, mediapoints or other agreed upon methods.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="PostrollDAI" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Can insert a postroll dynamic ad even if not signaled.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="KidVid" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>This content is subject to FCC childrens programming rules AKA KidVid</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    <xs:element name="SignalPointInsertion">
+        <xs:annotation>
+            <xs:documentation>Insert Signal at one or more points in the content based on the designated
+                start point (ex. MatchSignal)</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="SignalPoint">
+                    <xs:complexType>
+                        <xs:attribute name="offset" type="xs:duration">
+                            <xs:annotation>
+                                <xs:documentation>Offset from match signal or time </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="segmentationTypeId" type="xs:unsignedByte">
+                            <xs:annotation>
+                                <xs:documentation>See table in SCTE 35 - segmentation_type_id </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="segmentationUpidType" type="xs:unsignedByte">
+                            <xs:annotation>
+                                <xs:documentation>See table in SCTE 35 - segmentation_upid_type
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        <xs:attribute name="segmentationUpid" type="xs:string">
+                            <xs:annotation>
+                                <xs:documentation>fixed or pattern for UPID
+                                    Example
+                                    1. segmentationUpidType=0x09, segmentationUpid=SIGNAL:0RepxyxtQk65aT7clrgNRA==
+                                    2. segmentationUpidType=0x09, segmentationUpid=SIGNAL:%Base64GUID% - is there some standard xpath/regex to do this?
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="SignalPointDeletion" type="xs:boolean">
+        <xs:annotation>
+            <xs:documentation>Delete the Signal at the point identified in the MatchSignal XPath criteria.</xs:documentation>
+        </xs:annotation>
+    </xs:element>
+    ​
+</xs:schema>
