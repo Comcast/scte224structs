@@ -22,8 +22,35 @@ type ADI30 struct {
 		Xsi     string   `xml:"http://www.w3.org/2001/XMLSchema-instance xsi,attr" json:"-"`
 		//Xmlns   string   `xml:"xmlns,attr" json:"-"`
 	*/
+	ContentNamespace ContentXSIPrefix `xml:"explicitContentNamespace,attr"`
+	TitleNamespace   TitleXSIPrefix   `xml:"explicitTitleNamespace,attr"`
 	Asset []*Asset `xml:"Asset,omitempty" json:"asset,omitempty"`
 	//Metadata *Metadata `xml:"Metadata"`
+}
+
+
+type TitleXSIPrefix struct{}
+
+func (t TitleXSIPrefix) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{
+		Name: xml.Name{
+			Space: "",
+			Local: "xmlns:title",
+		},
+		Value: "http://www.scte.org/schemas/236/2017/title",
+	}, nil
+}
+
+type ContentXSIPrefix struct {}
+
+func (c ContentXSIPrefix) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{
+		Name: xml.Name{
+			Space: "",
+			Local: "xmlns:content",
+		},
+		Value: "http://www.scte.org/schemas/236/2017/content",
+	}, nil
 }
 
 // Metadata elements are containers for a single AMS element and

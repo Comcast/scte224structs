@@ -180,7 +180,7 @@ const expectedInlinedADIMetadata = `<Media xmlns="http://www.scte.org/schemas/22
   <MediaPoint xmlns="http://www.scte.org/schemas/224" id="hbo.com/media/HBOHD/program/f2MhzKZcfiosBNjDM2hHGK0F8_Jv5fUR/start" description="The Plot Against America" lastUpdated="2020-03-31T18:00:20.5Z" effective="2020-03-31T00:55:00Z" expires="2020-03-31T01:05:00Z" matchTime="2020-03-31T01:00:00Z" source="HBOHD" order="0">
     <AltID xmlns="http://www.scte.org/schemas/224">ow7qaht5qULfWFcl5sbvzJXOVJEHsP6a</AltID>
     <Metadata xmlns="http://www.scte.org/schemas/224">
-      <ADI3 xmlns="http://www.scte.org/schemas/236/2017/core">
+      <ADI3 xmlns="http://www.scte.org/schemas/236/2017/core" xmlns:content="http://www.scte.org/schemas/236/2017/content" xmlns:title="http://www.scte.org/schemas/236/2017/title">
         <Asset xmlns:XMLSchema-instance="http://www.w3.org/2001/XMLSchema-instance" XMLSchema-instance:type="content:MovieType" uriId="" providerVersionNum="20" internalVersionNum="20" creationDateTime="2020-03-30T00:00:00" startDateTime="2020-03-30T18:00:00.000-07:00" endDateTime="2020-03-30T19:01:00.000-07:00" lastModifiedDateTime="2020-03-24T23:21:02.000-07:00">
           <Provider>HBO</Provider>
           <Language xmlns="http://www.scte.org/schemas/236/2017/content" bitStreamMode="2">eng</Language>
