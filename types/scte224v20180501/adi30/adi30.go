@@ -167,7 +167,7 @@ type ExtAppData struct {
 }
 
 type Rating struct {
-	RatingSystem string `xml:"ratingSystem,attr"`
+	RatingSystem string `xml:"ratingSystem,attr,omitempty"`
 	Value        string `xml:",chardata"`
 }
 
