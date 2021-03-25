@@ -66,9 +66,24 @@ const thoseGuys2018 = `<Audience xmlns="http://www.scte.org/schemas/224" id="sup
   <Vird xmlns="urn:scte:224:audience">ThoseGuys</Vird>
 </Audience>`
 
-func TestUpgradeAudience(t *testing.T) {
+const nestedAudience2015 = `<Audience xmlns="http://www.scte.org/schemas/224/2015" id="foo/audience/any.all" description="Users anywhere on any device" lastUpdated="2021-03-24T03:27:05Z" match="ALL">
+  <Audience xmlns="http://www.scte.org/schemas/224/2015" description="location" lastUpdated="2021-03-23T08:16:19.235Z" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="foo/audience/location/any"></Audience>
+  <Audience xmlns="http://www.scte.org/schemas/224/2015" description="device" lastUpdated="2021-03-23T08:16:19.235Z" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="foo/audience/device/all"></Audience>
+</Audience>`
 
-	decoder := xml.NewDecoder(strings.NewReader(thoseGuys2015))
+const nestedAudience2018 = `<Audience xmlns="http://www.scte.org/schemas/224" id="foo/audience/any.all" description="Users anywhere on any device" lastUpdated="2021-03-24T03:27:05Z" match="ALL">
+  <Audience xmlns="http://www.scte.org/schemas/224" description="location" lastUpdated="2021-03-23T08:16:19.235Z" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="foo/audience/location/any"></Audience>
+  <Audience xmlns="http://www.scte.org/schemas/224" description="device" lastUpdated="2021-03-23T08:16:19.235Z" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="foo/audience/device/all"></Audience>
+</Audience>`
+
+func TestUpgradeAudience(t *testing.T) {
+	testAudienceUpgrade(t, thoseGuys2015, thoseGuys2018)
+	testAudienceUpgrade(t, nestedAudience2015, nestedAudience2018)
+}
+
+func testAudienceUpgrade(t *testing.T, old, new string) {
+
+	decoder := xml.NewDecoder(strings.NewReader(old))
 	var cmcScte2015 scte224_2015.Audience
 	decodeErr := decoder.Decode(&cmcScte2015)
 	if nil != decodeErr {
@@ -82,10 +97,10 @@ func TestUpgradeAudience(t *testing.T) {
 		t.FailNow()
 	}
 	upgraded := string(pretty)
-	if thoseGuys2018 != upgraded {
+	if new != upgraded {
 		t.Log(upgraded)
 		t.Log("did not match")
-		t.Log(thoseGuys2018)
+		t.Log(new)
 		t.Fail()
 	}
 }

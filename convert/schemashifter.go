@@ -60,6 +60,12 @@ func UpgradeAudience(audience scte224_2015.Audience) scte224.Audience {
 	for _, audienceProp := range audience.AudienceProperty {
 		dst.AudienceProperty = append(dst.AudienceProperty, scte224.Any{XMLName: audienceProp.XMLName, Value: audienceProp.Value})
 	}
+	for _, nestedAudience := range audience.Audiences {
+		if nil != nestedAudience {
+			upper := UpgradeAudience(*nestedAudience)
+			dst.Audiences = append(dst.Audiences, &upper)
+		}
+	}
 	dst.Match = scte224.Match(audience.Match)
 	dst.ReusableType = UpgradeReusableType(audience.ReusableType)
 	return dst
