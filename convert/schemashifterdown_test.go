@@ -9,8 +9,14 @@ import (
 )
 
 func TestDowngradeAudience(t *testing.T) {
+	testAudienceDowngrade(t, thoseGuys2018, thoseGuys2015)
+	testAudienceDowngrade(t, nestedAudience2018, nestedAudience2015)
 
-	decoder := xml.NewDecoder(strings.NewReader(thoseGuys2018))
+}
+
+func testAudienceDowngrade(t *testing.T, new, old string) {
+
+	decoder := xml.NewDecoder(strings.NewReader(new))
 	var cmcScte2018 scte224.Audience
 	decodeErr := decoder.Decode(&cmcScte2018)
 	if nil != decodeErr {
@@ -24,10 +30,10 @@ func TestDowngradeAudience(t *testing.T) {
 		t.FailNow()
 	}
 	downgraded := string(pretty)
-	if thoseGuys2015 != downgraded {
+	if old != downgraded {
 		t.Log(downgraded)
 		t.Log("did not match")
-		t.Log(thoseGuys2015)
+		t.Log(old)
 		t.Fail()
 	}
 }

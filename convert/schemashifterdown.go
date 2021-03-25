@@ -62,6 +62,12 @@ func DowngradeAudience(audience scte224.Audience) scte224_2015.Audience {
 	for _, audienceProp := range audience.AudienceProperty {
 		dst.AudienceProperty = append(dst.AudienceProperty, scte224_2015.Any{XMLName: audienceProp.XMLName, Value: audienceProp.Value})
 	}
+	for _, nestedAudience := range audience.Audiences {
+		if nil != nestedAudience {
+			downer := DowngradeAudience(*nestedAudience)
+			dst.Audiences = append(dst.Audiences, &downer)
+		}
+	}
 	dst.Match = scte224_2015.Match(audience.Match)
 	dst.ReusableType = DowngradeReusableType(audience.ReusableType)
 	return dst
