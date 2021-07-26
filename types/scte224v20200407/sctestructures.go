@@ -2,18 +2,22 @@ package scte224v20200407
 
 import (
 	"encoding/xml"
+	"fmt"
 	"log"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/Comcast/scte224structs/convert"
+	scte224_2015 "github.com/Comcast/scte224structs/types/scte224v20151115"
+	scte224_2018 "github.com/Comcast/scte224structs/types/scte224v20180501"
 	"github.com/Comcast/scte224structs/types/scte224v20180501/adi30"
 )
 
 const schemaLocation = "https://www.scte.org/standards-development/library/standards-catalog/ansiscte-224-2018r1/"
 
-// Structs for SCTE 224 2018 ESNI Objects.
+// Structs for SCTE 224 2020 ESNI Objects.
 // Table 3
 type IdentifiableType struct {
 	Id          string     `xml:"id,attr,omitempty" json:"id,omitempty"`
@@ -42,6 +46,46 @@ type Media struct {
 	MediaPoints []*MediaPoint `xml:"http://www.scte.org/schemas/224 MediaPoint" json:"mediaPoints,omitempty"`
 }
 
+func (m *Media) Get2018() (*scte224_2018.Media, error) {
+	encodedMedia, err := xml.Marshal(m)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Unmarshal into 2018 struct
+	var media2018 *scte224_2018.Media
+	err = xml.Unmarshal(encodedMedia, &media2018)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Apply the MediaPoint transformations
+	mediaPoints2018 := make([]*scte224_2018.MediaPoint, len(m.MediaPoints))
+	for _, mp := range m.MediaPoints {
+		mp2018, err := mp.Get2018()
+		if err != nil {
+			return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+		}
+
+		mediaPoints2018 = append(mediaPoints2018, mp2018)
+	}
+	media2018.MediaPoints = mediaPoints2018
+
+	return media2018, nil
+}
+
+func (m *Media) Get2015() (*scte224_2015.Media, error) {
+	// First downgrade it to 2018
+	media2018, err := m.Get2018()
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Then downgrade it to 2015, with the existing utility
+	media2015 := convert.DowngradeMedia(*media2018)
+	return &media2015, nil
+}
+
 // MediaPoint defines an SCTE 224 (ESNI) media point object.
 //Table 7
 type MediaPoint struct {
@@ -59,6 +103,68 @@ type MediaPoint struct {
 	Applys           []*Apply     `xml:"http://www.scte.org/schemas/224 Apply" json:"applys,omitempty"`
 	MatchSignal      *MatchSignal `xml:"http://www.scte.org/schemas/224 MatchSignal" json:"matchSignal,omitempty"`
 	MediaGuid        string       `xml:"-"` // used internally to track which media this point is part of
+}
+
+func (mp *MediaPoint) Get2018() (*scte224_2018.MediaPoint, error) {
+	encodedMP, err := xml.Marshal(mp)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Unmarshal into 2018 struct
+	var mp2018 *scte224_2018.MediaPoint
+	err = xml.Unmarshal(encodedMP, &mp2018)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Apply Policy transformations
+	applyPolicies2018 := make([]*scte224_2018.Apply, len(mp.Applys))
+	for _, applyElement := range mp.Applys {
+		applyPolicy2018 := scte224_2018.Apply{
+			XMLName:  applyElement.XMLName,
+			Duration: scte224_2018.Duration(applyElement.Duration),
+			Priority: applyElement.Priority,
+		}
+		policy2018, err := applyElement.Policy.Get2018()
+		if err != nil {
+			return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+		}
+		applyPolicy2018.Policy = policy2018
+
+		applyPolicies2018 = append(applyPolicies2018, &applyPolicy2018)
+	}
+
+	removePolicies2018 := make([]*scte224_2018.Remove, len(mp.Removes))
+	for _, removeElement := range mp.Removes {
+		removePolicy2018 := scte224_2018.Remove{
+			XMLName: removeElement.XMLName,
+		}
+		policy2018, err := removeElement.Policy.Get2018()
+		if err != nil {
+			return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+		}
+		removePolicy2018.Policy = policy2018
+
+		removePolicies2018 = append(removePolicies2018, &removePolicy2018)
+	}
+
+	mp2018.Applys = applyPolicies2018
+	mp2018.Removes = removePolicies2018
+
+	return mp2018, nil
+}
+
+func (mp *MediaPoint) Get2015() (*scte224_2015.MediaPoint, error) {
+	// First downgrade it to 2018
+	mp2018, err := mp.Get2018()
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Then downgrade it to 2015, with the existing utility
+	mp2015 := convert.DowngradeMediaPoint(*mp2018)
+	return &mp2015, nil
 }
 
 func (mp *MediaPoint) HasExplicitOrder() bool {
@@ -228,64 +334,43 @@ type Policy struct {
 	ViewingPolicys []*ViewingPolicy `xml:"http://www.scte.org/schemas/224 ViewingPolicy,omitempty" json:"viewingPolicys,omitempty"`
 }
 
-//Table 12
-type ViewingPolicy struct {
-	ReusableType
-	XMLName              xml.Name                    `xml:"http://www.scte.org/schemas/224 ViewingPolicy" json:"-"`
-	Audience             *Audience                   `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audience,omitempty"`
-	SignalPointDeletion  *SignalPointDeletionAction  `xml:"urn:scte:224:action SignalPointDeletion,omitempty" json:"signalPointDeletion,omitempty"`
-	SignalPointInsertion *SignalPointInsertionAction `xml:"urn:scte:224:action SignalPointInsertion,omitempty" json:"signalPointInsertion,omitempty"`
-	Content              *ContentAction              `xml:"urn:scte:224:action Content,omitempty" json:"content,omitempty"`
-	Allocation           *Allocation                 `xml:"urn:scte:224:action Allocation,omitempty" json:"Allocation,omitempty"`
-	ActionProperty       []Any                       `xml:",any" json:"actionProperty,omitempty"`
+func (p *Policy) Get2018() (*scte224_2018.Policy, error) {
+	encodedPolicy, err := xml.Marshal(p)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Unmarshal into 2018 struct
+	var policy2018 *scte224_2018.Policy
+	err = xml.Unmarshal(encodedPolicy, &policy2018)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Apply ViewingPolicy transformations
+	viewingPolicies2018 := make([]*scte224_2018.ViewingPolicy, len(p.ViewingPolicys))
+	for _, vp := range p.ViewingPolicys {
+		vp2018, err := vp.Get2018()
+		if err != nil {
+			return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+		}
+		viewingPolicies2018 = append(viewingPolicies2018, vp2018)
+	}
+	policy2018.ViewingPolicys = viewingPolicies2018
+
+	return policy2018, nil
 }
 
-type Allocation struct {
-	XMLName xml.Name `xml:"urn:scte:224:action Allocation" json:"-"`
-	Slots   []*Slots `xml:"Slots,omitempty" json:"Slots,omitempty"`
-}
+func (p *Policy) Get2015() (*scte224_2015.Policy, error) {
+	// First downgrade it to 2018
+	policy2018, err := p.Get2018()
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
 
-type Slots struct {
-	XMLName xml.Name `xml:"Slots" json:"-"`
-	AdSlots []*Slot  `xml:"Slot,omitempty" json:"Slot,omitempty"`
-}
-
-type Slot struct {
-	XMLName        xml.Name          `xml:"Slot" json:"-"`
-	AdsReferenceId []*AdsReferenceId `xml:"AdsReferenceId,omitempty" json:"AdsReferenceId,omitempty"`
-	Duration       Duration          `xml:"duration,attr,omitempty" json:"duration,omitempty"`
-	Offset         Duration          `xml:"offset,attr,omitempty" json:"offset,omitempty"`
-}
-
-type AdsReferenceId struct {
-	XMLName       xml.Name `xml:"AdsReferenceId" json:"-"`
-	ID            string   `xml:",chardata" json:"data,omitempty"`
-	ReferenceType string   `xml:"referenceType,attr,omitempty" json:"referenceType,omitempty"`
-	Exclude       bool     `xml:"exclude,attr,omitempty" json:"exclude,omitempty"`
-}
-
-type ContentAction struct {
-	XMLName xml.Name `xml:"urn:scte:224:action Content" json:"-"`
-	Content string   `xml:",chardata" json:"data,omitempty"`
-}
-
-type SignalPointDeletionAction struct {
-	XMLName             xml.Name `xml:"urn:scte:224:action SignalPointDeletion" json:"-"`
-	SignalPointDeletion string   `xml:",chardata" json:"data,omitempty"`
-}
-
-type SignalPointInsertionAction struct {
-	SignalPoints []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
-}
-
-type SignalPoint struct {
-	Offset               Duration   `xml:"offset,attr,omitempty" json:"offset,omitempty"`
-	SegmentationTypeId   *uint      `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
-	SegmentationUpidType *uint      `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
-	SegmentationUpid     string     `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
-	RepeatInterval       Duration   `xml:"repeatInterval,attr,omitempty" json:"repeatInterval,omitempty"`
-	RepeatStart          *time.Time `xml:"repeatStart,attr,omitempty" json:"repeatStart,omitempty"`
-	RepeatStop           *time.Time `xml:"repeatStop,attr,omitempty" json:"repeatStop,omitempty"`
+	// Then downgrade it to 2015, with the existing utility
+	policy2015 := convert.DowngradePolicy(*policy2018)
+	return &policy2015, nil
 }
 
 //Table 13
@@ -295,6 +380,34 @@ type Audience struct {
 	Match            Match       `xml:"match,attr,omitempty" json:"match,omitempty"`
 	Audiences        []*Audience `xml:"http://www.scte.org/schemas/224 Audience,omitempty" json:"audiences,omitempty"`
 	AudienceProperty []Any       `xml:",any" json:"audienceProperty,omitempty"`
+}
+
+func (aud *Audience) Get2018() (*scte224_2018.Audience, error) {
+	encodedAud, err := xml.Marshal(aud)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Unmarshal into 2018 struct
+	var aud2018 *scte224_2018.Audience
+	err = xml.Unmarshal(encodedAud, &aud2018)
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	return aud2018, nil
+}
+
+func (aud *Audience) Get2015() (*scte224_2015.Audience, error) {
+	// First downgrade it to 2018
+	aud2018, err := aud.Get2018()
+	if err != nil {
+		return nil, fmt.Errorf("error attempting to downgrade the 2020 element, %+v", err)
+	}
+
+	// Then downgrade it to 2015, with the existing utility
+	aud2015 := convert.DowngradeAudience(*aud2018)
+	return &aud2015, nil
 }
 
 //********************* Results Types *************************//

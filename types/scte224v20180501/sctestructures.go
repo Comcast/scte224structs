@@ -2,12 +2,13 @@ package scte224v20180501
 
 import (
 	"encoding/xml"
-	"github.com/Comcast/scte224structs/types/scte224v20180501/adi30"
 	"log"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Comcast/scte224structs/types/scte224v20180501/adi30"
 )
 
 const schemaLocation = "http://www.scte.org/schemas/224/SCTE224-20180501.xsd"
@@ -207,6 +208,22 @@ type ViewingPolicy struct {
 	SignalPointInsertion *SignalPointInsertionAction `xml:"urn:scte:224:action SignalPointInsertion,omitempty" json:"signalPointInsertion,omitempty"`
 	Content              *ContentAction              `xml:"urn:scte:224:action Content,omitempty" json:"content,omitempty"`
 	ActionProperty       []Any                       `xml:",any" json:"actionProperty,omitempty"`
+}
+
+// Mutates the receiver
+// Removes any "Allocation" action from the "ActionProperty" field, rest of the fields are unchagned
+func (vp *ViewingPolicy) RemoveAllocationAction() {
+	newActionProperty := make([]Any, len(vp.ActionProperty))
+	for _, actionProperty := range vp.ActionProperty {
+		// Ignore/Remove any "Allocation" action from the 2018 object, because it is an addition in 2020 spec
+		if actionProperty.XMLName.Local == "Allocation" {
+			continue
+		}
+
+		newActionProperty = append(newActionProperty, actionProperty)
+	}
+
+	vp.ActionProperty = newActionProperty
 }
 
 type ContentAction struct {
