@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="urn:scte:224:audience" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="urn:scte:224:audience" elementFormDefault="qualified">
+  <xs:element name="Distributor" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>This is the registered domain name of the distributor providing the content to the subscriber. This can be used where different distributors have different technical capabilities, use different vendors or are allowed different opportunities. In some cases the provider may want to send a specific SCTE 224 feed to each distributor. In other cases the provider may be sending this to an ad vendor or redistributor that provides multiple distributors and requires all of the information.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Measured" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation>to indicate if this ad is being viewed on a device that reports measurement to an approved measurement company. Typical measured devices are over the air TV sets, set top boxes, streaming media boxes or connected TV’s. Typical non-measured devices include phones, tablets, laptops and PC’s. Many of these non-measured devices though can send the video and audio to a TV that may be being measured. The device should provide that information if it is available. As measurement companies evolve and measure more devices and expand their capability to allow for addressable advertising, this value may need to be combined with other audience data to be useful.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="ViewTime">
+    <xs:annotation>
+      <xs:documentation>viewing time from live type xs:duration) to enable ad insertion before or after some duration from the start of playback period is over. Add Boolean attribute “after” that is optional with a default of “true”.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:duration">
+          <xs:attribute default="true" name="after" type="xs:boolean">
+            <xs:annotation>
+              <xs:documentation>This attribute is used to select a viewer that is watching the content after (true) the duration has elapsed or before (after=false) the duration has elapsed. Example would be a ViewTime duration of PT3D3H for a C3 measurement window and the default of after would be a viewer watching the content after the C3 window expired. </xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="All">
+    <xs:annotation>
+      <xs:documentation>The entire universe of viewers.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Device">
+    <xs:annotation>
+      <xs:documentation>Indicates the client device.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern value="(PHONE|TABLET|COMPUTER|WATCH|GAMECONSOLE|SMARTTV|MEDIAPLAYER|other:*)"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="DeviceFeature">
+    <xs:annotation>
+      <xs:documentation>Properties/attributes of a hardware device that is being used to view
+        content. May be controllable features of that hardware device. i.e. digital
+        output</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="DEDICATED_DISPLAY">
+          <xs:annotation>
+            <xs:documentation>A device that has its own integrated content display (e.g. tablet,
+              smartphone, smartTV)</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="DIGITAL_OUTPUT">
+          <xs:annotation>
+            <xs:documentation>A device that has the capability to output digital content through any
+              means (e.g. hardware port, wireless casting)</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="SYSTEM_ON_A_CHIP">
+          <xs:annotation>
+            <xs:documentation>A device that is driven through firmware and is only upgradable by the
+              manufacturer</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="LOCATION_AWARE">
+          <xs:annotation>
+            <xs:documentation>A device that has enabled location based services for the application to use.</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="MOBILE">
+          <xs:annotation>
+            <xs:documentation>A device that is has its own power source and dedicated
+              display</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="ANALOG_OUTPUT">
+          <xs:annotation>
+            <xs:documentation>A device that has a port to output content in analog form (e.g.
+              composite, s-video, component, coaxial)</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="LOCAL_STORAGE">
+          <xs:annotation>
+            <xs:documentation>A device that has the capability to record and store
+              content</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="HDCP">
+          <xs:annotation>
+            <xs:documentation>High-Bandwidth Digital Content Protection capable</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="CGMS-A">
+          <xs:annotation>
+            <xs:documentation>Analog Copy Generation Management System capable</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="ROOT_DETECTION">
+          <xs:annotation>
+            <xs:documentation>This device has NOT been rooted or jailbroken</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="3D">
+          <xs:annotation>
+            <xs:documentation>A device capable of displaying 3D content</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="PlayerFeature">
+    <xs:annotation>
+      <xs:documentation/>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:enumeration value="FAST_FORWARD">
+          <xs:annotation>
+            <xs:documentation>Player has a fast-forward feature</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+        <xs:enumeration value="PROGRAMMER_BRANDING">
+          <xs:annotation>
+            <xs:documentation>The player has the capability of being branded for the
+              programmer</xs:documentation>
+          </xs:annotation>
+        </xs:enumeration>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="OS">
+    <xs:annotation>
+      <xs:documentation>Indicates the client operating sytem with optional minimum version.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern value="(ANDROID|WINDOWS|IOS|OSX|LINUX|other:*)(v[\d.]*)?"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="Authenticated" type="xs:boolean">
+    <xs:annotation>
+      <xs:documentation>Clients authenticated per provider/distributor agreed upon scheme</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <!-- GML
+http://www.georss.org/gml.html
+http://www.georss.org/simple.html
+http://www.georss.org/xml/1.0/georss.xsd 
+http://www.georss.org/graphics/georss-gml-uml.png
+http://www.opengis.net/gml
+
+World Geodetic System 1984 (WGS84) 
+WGS84 with coordinates written in decimal degrees.EPSG:4236  European Petroleum Survey Group (EPSG).,http://www.epsg.org/
+Oil & Gas Producers (OGP) Surveying & Positioning Committee
+
+http://web.archive.org/web/20120402143802/https://www1.nga.mil/ProductsServices/GeodesyandGeophysics/WorldGeodeticSystem/Pages/default.aspx
+
+http://en.wikipedia.org/wiki/ISO_6709
+http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=39242
+https://www.iso.org/obp/ui/#iso:std:iso:19111:ed-2:v1:en
+
+no altitude value (implied srsDimension of 2)
+-->
+  <xs:element name="LatLongRadius">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a circle designated by the
+        latitude,longitude,radius decimal values separated by whitespace. latitude from –90 to +90,
+        longitude from –180 to +180 in degrees, radius in meters. A circular area defined by a
+        center point containing a pair of coordinates representing latitude then longitude in the
+        WGS84 coordinate reference system and a decimal radius in meters. Example:
+        <!-- audience:LatLongRadius>39.774769485295465 -104.9853515625 10000.00</audience:LatLongRadius -->
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern value="([-+]?\d{1,2}([.]\d+)?)(\s+)([-+]?\d{1,3}([.]\d+)?)(\s+)(\d+)([.]\d+)?"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="LatLongBox">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a box designated by a
+        latitude,longitude of two opposite corners of a box, decimal values separated by whitespace.
+        latitude from –90 to +90, longitude from –180 to +180 in degrees. Rectangular envelope
+        property element containing two pairs of coordinates (lower left envelope corner, upper
+        right envelope corner) representing latitude then longitude in the WGS84 coordinate
+        reference system. Example:
+        <!-- audience:LatLongBox>39.774769485295465 -104.9853515625 40.774769485295465 -103.9853515625</audience:LatLongBox -->
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern
+          value="([-+]?\d{1,2}([.]\d+)?)(\s+)([-+]?\d{1,3}([.]\d+)?)(\s+)([-+]?\d{1,2}([.]\d+)?)(\s+)([-+]?\d{1,3}([.]\d+)?)"
+        />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="LatLongPolygon">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a polygon designated by a
+        sequence of latitude,longitude decimal value pairs for a closed polygon. Latitude from –90
+        to +90, longitude from –180 to +180 in degrees. 3 minimum non-collinear, pairs and the last
+        point is implicitly is the same as the first point (closing the polygon). I.e. closed ring
+        property element containing a list of pairs of coordinates (first and last pair are
+        implicitly identical) representing latitude then longitude in the WGS84 coordinate reference
+        system. Example:
+        <!-- audience:LatLongPolygon>39.774769485295465 -104.9853515625 40.774769485295465 -103.9853515625 41.774769485295465 -104.9853515625</audience:LatLongPolygon -->
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:pattern
+          value="([-+]?\d{1,2}([.]\d+)?)(\s+)([-+]?\d{1,3}([.]\d+)?)((\s+)([-+]?\d{1,2}([.]\d+)?)(\s+)([-+]?\d{1,3}([.]\d+)?)){2,}"
+        />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="ISO3166">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a country or region designated
+        by a two-letter country codes defined in ISO 3166-1, part of the ISO 3166 standard published
+        by the International Organization for Standardization (ISO), to represent countries,
+        dependent territories, and special areas of geographical interest.
+        http://www.iso.org/iso/country_codes/country_codes Example:
+        <!-- audience:ISO3166>us</audience:ISO3166 --></xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:length value="2"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="State">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a state designated by 2
+        character US state abbreviation
+        https://about.usps.com/who-we-are/postal-history/state-abbreviations.pdf
+        Example:<!-- audience:State>co</audience:State --></xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:length value="2"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="FIPS" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a county designated by 5 digit
+      Federal Information Processing Standard (FIPS) code which uniquely identifies counties and
+      county equivalents in the United States, certain U.S. possessions, and certain freely
+      associated states. The first two digits are the FIPS state code and the last three are the
+      county code within the state or possession. NIST INCITS 31:2009 or
+      https://www.census.gov/geo/reference/codes/cou.html
+      Example:<!-- audience:FIPS>08031</audience:FIPS --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Zip" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a region designated by a 5
+        decimal numerical digits indicating the postal codes used by the United States Postal
+        Service (USPS) https://www.usps.com/
+        Example:<!-- audience:Zip>80202</audience:Zip --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="PostalCode" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client is located geographically within a region designated by a postal
+        codes used internationally by postal service to determine a specific delivery region.
+        Example:<!-- audience:PostalCode>2020</audience:PostalCode --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="HomeZip" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client's home location geographically within a region designated by a 5
+        decimal numerical digits indicating the postal codes used by the United States Postal
+        Service (USPS) https://www.usps.com/
+        Example:<!-- audience:HomeZip>80202</audience:HomeZip --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="HomePostalCode" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client's home location geographically within a region designated by a postal
+        codes used internationally by postal service to determine a specific delivery region.
+        Example:<!-- audience:HomePostalCode>2020</audience:HomePostalCode --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="DMA" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client is within a Designated Market Area. Value is to be the DMA code
+        value. http://www.nielsen.com/intl-campaigns/us/dma-maps.html
+        Example:<!-- audience:DMA>751</audience:DMA --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Vird" type="xs:token">
+    <xs:annotation>
+      <xs:documentation>The client is within and area associated with a Virtual Integrated Receiver
+        and Decoder (IRD). Historically, a geographic area may have been serviced by a given
+        authorized IRD. A Virtual IRD allows for an equivalent identification of an areas serviced
+        by an IRD in non-physical terms, i.e. virtual. For example, though a actual acquisition of
+        content may be done via a IRD, the distribution of that content may be controlled with
+        virtual equivalents of an IRD within a distributors network
+        Example:<!-- audience:Vird>51</audience:Vird --></xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="Network">
+    <xs:annotation>
+      <xs:documentation>The client access is from a private or public network. Private networks are
+        those that are typically wholly operated by a distributor and require specific security
+        measures to access.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern value="PUBLIC|PRIVATE"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="DrmProperty" type="xs:token"/>
+  <xs:element name="Default">
+    <xs:annotation>
+      <xs:documentation>Global default describing any audiance that may be experiencing a detectable and actionable
+        interuption of normal operations, could be considered an "Exception" case where some action may and
+        can be applied. 
+   </xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern
+          value="TECHNICAL_DIFFICULTY|WEB_BLACKOUT|OFF_AIR|CONTROL_ROOM|PLACEMENT_OPPORTUNITY"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="CIDR">
+    <xs:annotation>
+      <xs:documentation>Classless Inter-Domain Routing (CIDR) IPV4 address block range. See RFC4632
+        http://tools.ietf.org/html/rfc4632 - audience is within the ip block
+        described.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern
+          value="(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(/([0-9]|[1-2][0-9]|3[0-2]))?"/>
+        <!-- also allow single IP -->
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="CIDR_IPV6">
+    <xs:annotation>
+      <xs:documentation>Classless Inter-Domain Routing (CIDR) IPV6 address block range. Any audience
+        within the ip block described.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern
+          value="s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?(s*(/(d|dd|1[0-1]d|12[0-8])))?"
+        />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="DAIManager">
+    <xs:annotation>
+      <xs:documentation>Identifies who is managing the campaign inventory.</xs:documentation>
+    </xs:annotation>
+    <xs:simpleType>
+      <xs:restriction base="xs:token">
+        <xs:pattern value="PROVIDER|DISTRIBUTOR"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+</xs:schema>
