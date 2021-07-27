@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"time"
 
+	"github.com/Comcast/scte224structs/convert"
+	scte224_2015 "github.com/Comcast/scte224structs/types/scte224v20151115"
 	scte224_2018 "github.com/Comcast/scte224structs/types/scte224v20180501"
 )
 
@@ -33,6 +35,11 @@ func (p *Policy) Get2018() scte224_2018.Policy {
 	}
 
 	return destination
+}
+
+func (p *Policy) Get2015() scte224_2015.Policy {
+	policy2018 := p.Get2018()
+	return convert.DowngradePolicy(policy2018)
 }
 
 //Table 12
@@ -103,6 +110,11 @@ func (vp *ViewingPolicy) Get2018() scte224_2018.ViewingPolicy {
 	}
 
 	return destination
+}
+
+func (vp *ViewingPolicy) Get2015() scte224_2015.ViewingPolicy {
+	vp2018 := vp.Get2018()
+	return convert.DowngradeViewingPolicy(vp2018)
 }
 
 type Allocation struct {
@@ -187,4 +199,9 @@ func (aud *Audience) Get2018() scte224_2018.Audience {
 	}
 
 	return destination
+}
+
+func (aud *Audience) Get2015() scte224_2015.Audience {
+	aud2018 := aud.Get2018()
+	return convert.DowngradeAudience(aud2018)
 }

@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Comcast/scte224structs/convert"
+	scte224_2015 "github.com/Comcast/scte224structs/types/scte224v20151115"
 	scte224_2018 "github.com/Comcast/scte224structs/types/scte224v20180501"
 )
 
@@ -47,6 +49,11 @@ func (m *Media) Get2018() scte224_2018.Media {
 	}
 
 	return destination
+}
+
+func (m *Media) Get2015() scte224_2015.Media {
+	media2018 := m.Get2018()
+	return convert.DowngradeMedia(media2018)
 }
 
 // MediaPoint defines an SCTE 224 (ESNI) media point object.
@@ -137,6 +144,11 @@ func (mp *MediaPoint) Get2018() scte224_2018.MediaPoint {
 	}
 
 	return destination
+}
+
+func (mp *MediaPoint) Get2015() scte224_2015.MediaPoint {
+	mp2018 := mp.Get2018()
+	return convert.DowngradeMediaPoint(mp2018)
 }
 
 func (mp *MediaPoint) HasExplicitOrder() bool {

@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"time"
 
+	"github.com/Comcast/scte224structs/convert"
+	scte224_2015 "github.com/Comcast/scte224structs/types/scte224v20151115"
 	scte224_2018 "github.com/Comcast/scte224structs/types/scte224v20180501"
 	"github.com/Comcast/scte224structs/types/scte224v20180501/adi30"
 )
@@ -71,6 +73,11 @@ func (idType *IdentifiableType) Get2018() scte224_2018.IdentifiableType {
 	return destination
 }
 
+func (idType *IdentifiableType) Get2015() scte224_2015.IdentifiableType {
+	idType2018 := idType.Get2018()
+	return convert.DowngradeIdentifiableType(idType2018)
+}
+
 //Table 5
 type ReusableType struct {
 	IdentifiableType
@@ -82,6 +89,11 @@ func (rt ReusableType) Get2018() scte224_2018.ReusableType {
 		IdentifiableType: rt.IdentifiableType.Get2018(),
 		XLinkHRef:        rt.XLinkHRef,
 	}
+}
+
+func (rt ReusableType) Get2015() scte224_2015.ReusableType {
+	rt2018 := rt.Get2018()
+	return convert.DowngradeReusableType(rt2018)
 }
 
 type Metadata struct {
