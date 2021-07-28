@@ -210,22 +210,6 @@ type ViewingPolicy struct {
 	ActionProperty       []Any                       `xml:",any" json:"actionProperty,omitempty"`
 }
 
-// Mutates the receiver
-// Removes any "Allocation" action from the "ActionProperty" field, rest of the fields are unchagned
-func (vp *ViewingPolicy) RemoveAllocationAction() {
-	newActionProperty := make([]Any, len(vp.ActionProperty))
-	for _, actionProperty := range vp.ActionProperty {
-		// Ignore/Remove any "Allocation" action from the 2018 object, because it is an addition in 2020 spec
-		if actionProperty.XMLName.Local == "Allocation" {
-			continue
-		}
-
-		newActionProperty = append(newActionProperty, actionProperty)
-	}
-
-	vp.ActionProperty = newActionProperty
-}
-
 type ContentAction struct {
 	XMLName xml.Name `xml:"urn:scte:224:action Content" json:"-"`
 	Content string   `xml:",chardata" json:"data,omitempty"`
