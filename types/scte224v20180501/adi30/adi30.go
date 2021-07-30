@@ -24,10 +24,10 @@ type ADI30 struct {
 	*/
 	ContentNamespace ContentXSIPrefix `xml:"explicitContentNamespace,attr"`
 	TitleNamespace   TitleXSIPrefix   `xml:"explicitTitleNamespace,attr"`
-	Asset []*Asset `xml:"Asset,omitempty" json:"asset,omitempty"`
+	OfferNamespace   OfferXSIPrefix   `xml:"explicitOfferNamespace,attr"`
+	Asset            []*Asset         `xml:"Asset,omitempty" json:"asset,omitempty"`
 	//Metadata *Metadata `xml:"Metadata"`
 }
-
 
 type TitleXSIPrefix struct{}
 
@@ -41,7 +41,7 @@ func (t TitleXSIPrefix) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	}, nil
 }
 
-type ContentXSIPrefix struct {}
+type ContentXSIPrefix struct{}
 
 func (c ContentXSIPrefix) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return xml.Attr{
@@ -50,6 +50,18 @@ func (c ContentXSIPrefix) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 			Local: "xmlns:content",
 		},
 		Value: "http://www.scte.org/schemas/236/2017/content",
+	}, nil
+}
+
+type OfferXSIPrefix struct{}
+
+func (o OfferXSIPrefix) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	return xml.Attr{
+		Name: xml.Name{
+			Space: "",
+			Local: "xmlns:offer",
+		},
+		Value: "http://www.scte.org/schemas/236/2017/offer",
 	}, nil
 }
 
