@@ -154,7 +154,7 @@ type SlotRules struct {
 type SlotRule struct {
 	XMLName    xml.Name     `xml:"urn:scte:224:action SlotRule" json:"-"`
 	Parameters []*Parameter `xml:"Parameter,omitempty" json:"Parameter,omitempty"`
-	Rule       string       `xml:"rule,omitempty" json:"rule,omitempty"`
+	Rule       string       `xml:"rule,attr,omitempty" json:"rule,omitempty"`
 }
 
 type Parameter struct {
