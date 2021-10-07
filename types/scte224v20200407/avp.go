@@ -120,10 +120,10 @@ func (vp *ViewingPolicy) Get2015() scte224_2015.ViewingPolicy {
 type Allocation struct {
 	XMLName   xml.Name `xml:"urn:scte:224:action Allocation" json:"-"`
 	Slots     []*Slots `xml:"Slots,omitempty" json:"Slots,omitempty"`
-	OwnerType string   `xml:"ownerType,omitempty" json:"ownerType,omitempty"`
-	OwnerName string   `xml:"ownerName,omitempty" json:"ownerName,omitempty"`
+	OwnerType string   `xml:"ownerType,attr,omitempty" json:"ownerType,attr,omitempty"`
+	OwnerName string   `xml:"ownerName,attr,omitempty" json:"ownerName,attr,omitempty"`
 	Duration  Duration `xml:"duration,attr,omitempty" json:"duration,omitempty"`
-	Ads       string   `xml:"ads,omitempty" json:"ads,omitempty"`
+	Ads       string   `xml:"ads,attr,omitempty" json:"ads,attr,omitempty"`
 }
 
 type Slots struct {
