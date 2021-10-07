@@ -49,6 +49,7 @@ func TestViewingPolicyAllocation(t *testing.T) {
 		}
 	}()
 
+	assert.Equal(t, "Stu", vpol.Allocation.OwnerName)
 	firstSlot := vpol.Allocation.Slots[0]
 	assert.NotNil(t, firstSlot)
 
@@ -58,4 +59,7 @@ func TestViewingPolicyAllocation(t *testing.T) {
 
 	firstAd := adSlots[0].AdsReferenceId[0]
 	assert.Equalf(t, "98765", (*firstAd).ID, "Expected 98765 but got %s \n", (*firstAd).ID)
+	assert.Equal(t, "exclusionWithInference", adSlots[0].SlotRules.SlotRule[0].Rule)
+	assert.Equal(t, "advertiser", adSlots[0].SlotRules.SlotRule[0].Parameters[0].ParameterName)
+	assert.Equal(t, "advertiser_external_id", adSlots[0].SlotRules.SlotRule[0].Parameters[0].Value)
 }
