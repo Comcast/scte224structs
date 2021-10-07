@@ -118,27 +118,49 @@ func (vp *ViewingPolicy) Get2015() scte224_2015.ViewingPolicy {
 }
 
 type Allocation struct {
-	XMLName xml.Name `xml:"urn:scte:224:action Allocation" json:"-"`
-	Slots   []*Slots `xml:"Slots,omitempty" json:"Slots,omitempty"`
+	XMLName   xml.Name `xml:"urn:scte:224:action Allocation" json:"-"`
+	Slots     []*Slots `xml:"Slots,omitempty" json:"Slots,omitempty"`
+	OwnerType string   `xml:"ownerType,omitempty" json:"ownerType,omitempty"`
+	OwnerName string   `xml:"ownerName,omitempty" json:"ownerName,omitempty"`
+	Duration  Duration `xml:"duration,attr,omitempty" json:"duration,omitempty"`
+	Ads       string   `xml:"ads,omitempty" json:"ads,omitempty"`
 }
 
 type Slots struct {
-	XMLName xml.Name `xml:"Slots" json:"-"`
+	XMLName xml.Name `xml:"urn:scte:224:action Slots" json:"-"`
 	AdSlots []*Slot  `xml:"Slot,omitempty" json:"Slot,omitempty"`
 }
 
 type Slot struct {
-	XMLName        xml.Name          `xml:"Slot" json:"-"`
+	XMLName        xml.Name          `xml:"urn:scte:224:action Slot" json:"-"`
 	AdsReferenceId []*AdsReferenceId `xml:"AdsReferenceId,omitempty" json:"AdsReferenceId,omitempty"`
+	SlotRules      *SlotRules        `xml:"SlotRules,omitempty" json:"SlotRules,omitempty"`
 	Duration       Duration          `xml:"duration,attr,omitempty" json:"duration,omitempty"`
 	Offset         Duration          `xml:"offset,attr,omitempty" json:"offset,omitempty"`
 }
 
 type AdsReferenceId struct {
-	XMLName       xml.Name `xml:"AdsReferenceId" json:"-"`
+	XMLName       xml.Name `xml:"urn:scte:224:action AdsReferenceId" json:"-"`
 	ID            string   `xml:",chardata" json:"data,omitempty"`
 	ReferenceType string   `xml:"referenceType,attr,omitempty" json:"referenceType,omitempty"`
 	Exclude       bool     `xml:"exclude,attr,omitempty" json:"exclude,omitempty"`
+}
+
+type SlotRules struct {
+	XMLName    xml.Name     `xml:"urn:scte:224:action SlotRules" json:"-"`
+	SlotRule []*SlotRule `xml:"SlotRule,omitempty" json:"SlotRule,omitempty"`
+}
+
+type SlotRule struct {
+	XMLName    xml.Name     `xml:"urn:scte:224:action SlotRule" json:"-"`
+	Parameters []*Parameter `xml:"Parameter,omitempty" json:"Parameter,omitempty"`
+	Rule       string       `xml:"rule,omitempty" json:"rule,omitempty"`
+}
+
+type Parameter struct {
+	XMLName       xml.Name `xml:"urn:scte:224:action Parameter" json:"-"`
+	ParameterName string   `xml:"parameterName,omitempty" json:"parameterName,omitempty"`
+	Value         string   `xml:",chardata" json:"value,omitempty"`
 }
 
 type ContentAction struct {

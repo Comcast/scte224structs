@@ -19,7 +19,7 @@ func TestViewingPolicyDowngrade(t *testing.T) {
 }
 
 func TestAudienceDowngrade(t *testing.T) {
-	var aud *Audience
+	var aud Audience
 	err := xml.Unmarshal([]byte(aud2020Raw), &aud)
 	assert.Nil(t, err, "Error unmarshalling audience")
 
@@ -30,12 +30,14 @@ func TestAudienceDowngrade(t *testing.T) {
 }
 
 func TestViewingPolicyAllocation(t *testing.T) {
-	var vpol *ViewingPolicy
+	var vpol ViewingPolicy
 	err := xml.Unmarshal([]byte(vp2020Raw), &vpol)
 	assert.Nil(t, err, "Error unmarshalling viewingpolicy")
 
+	//var roundtrip []byte
 	_, err = xml.Marshal(vpol)
 	assert.Nil(t, err, "Error marshalling viewingpolicy")
+	//t.Log(string(roundtrip))
 
 	// Testing "Allocation" element unmarshalling which is a new addition in 2020/21 version
 	defer func() {
