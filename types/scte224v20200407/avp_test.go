@@ -19,7 +19,7 @@ func TestViewingPolicyDowngrade(t *testing.T) {
 }
 
 func TestAudienceDowngrade(t *testing.T) {
-	var aud *Audience
+	var aud Audience
 	err := xml.Unmarshal([]byte(aud2020Raw), &aud)
 	assert.Nil(t, err, "Error unmarshalling audience")
 
@@ -30,12 +30,14 @@ func TestAudienceDowngrade(t *testing.T) {
 }
 
 func TestViewingPolicyAllocation(t *testing.T) {
-	var vpol *ViewingPolicy
+	var vpol ViewingPolicy
 	err := xml.Unmarshal([]byte(vp2020Raw), &vpol)
 	assert.Nil(t, err, "Error unmarshalling viewingpolicy")
 
+	//var roundtrip []byte
 	_, err = xml.Marshal(vpol)
 	assert.Nil(t, err, "Error marshalling viewingpolicy")
+	//t.Log(string(roundtrip))
 
 	// Testing "Allocation" element unmarshalling which is a new addition in 2020/21 version
 	defer func() {
@@ -47,6 +49,7 @@ func TestViewingPolicyAllocation(t *testing.T) {
 		}
 	}()
 
+	assert.Equal(t, "Stu", vpol.Allocation.OwnerName)
 	firstSlot := vpol.Allocation.Slots[0]
 	assert.NotNil(t, firstSlot)
 
@@ -56,4 +59,7 @@ func TestViewingPolicyAllocation(t *testing.T) {
 
 	firstAd := adSlots[0].AdsReferenceId[0]
 	assert.Equalf(t, "98765", (*firstAd).ID, "Expected 98765 but got %s \n", (*firstAd).ID)
+	assert.Equal(t, "exclusionWithInference", adSlots[0].SlotRules.SlotRule[0].Rule)
+	assert.Equal(t, "advertiser", adSlots[0].SlotRules.SlotRule[0].Parameters[0].ParameterName)
+	assert.Equal(t, "advertiser_external_id", adSlots[0].SlotRules.SlotRule[0].Parameters[0].Value)
 }

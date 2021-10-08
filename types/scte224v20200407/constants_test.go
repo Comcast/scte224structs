@@ -2,13 +2,18 @@ package scte224v20200407
 
 const vp2020Raw string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="test/program" description="test program" lastUpdated="2021-01-19T18:49:26.298986528Z">
   <Content xmlns="urn:scte:224:action">CONTENT</Content>
-  <Allocation xmlns="urn:scte:224:action">
+  <Allocation xmlns="urn:scte:224:action" ownerType="PROVIDER" ownerName="Stu" duration="PT30S" ads="FreeWheel/MRM">
   	<Slots>
   		<Slot duration="PT15S" offset="PT0S">        
 	  		<AdsReferenceId>98765</AdsReferenceId>        
 	  		<AdsReferenceId>87654</AdsReferenceId>        
 	  		<AdsReferenceId>54321</AdsReferenceId>        
-	  		<AdsReferenceId>56343</AdsReferenceId>      
+	  		<AdsReferenceId>56343</AdsReferenceId>     
+            <SlotRules>
+		      <SlotRule rule="exclusionWithInference">
+		        <Parameter parameterName="advertiser">advertiser_external_id</Parameter>
+		      </SlotRule>
+            </SlotRules>
   		</Slot>      
   		<Slot duration="PT30S" offset="PT15S">
        		<AdsReferenceId>123</AdsReferenceId>      
