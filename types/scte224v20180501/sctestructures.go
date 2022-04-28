@@ -221,7 +221,8 @@ type SignalPointDeletionAction struct {
 }
 
 type SignalPointInsertionAction struct {
-	SignalPoints []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
+	SignalPoints   []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
+	ActionProperty []Any          `xml:",any" json:"actionProperty,omitempty"`
 }
 
 type SignalPoint struct {

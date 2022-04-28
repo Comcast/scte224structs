@@ -23,6 +23,31 @@ const vp2020Raw string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224"
   </Allocation>
 </ViewingPolicy>`
 
+const vpSignalPointInsertion_w_SpliceInfoSection string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="test.com/viewingpolicy/test/testVP1" description="Test VP with SignalPointInsertion containing a SpliceInfoSection" lastUpdated="2022-04-27T22:09:55Z">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="test.com/audience/test/testaudience"></Audience>
+  <SignalPointInsertion xmlns="urn:scte:224:action">
+    <SpliceInfoSection xmlns="http://www.scte.org/schemas/35" offset="PT1M">
+      <TimeSignal xmlns="http://www.scte.org/schemas/35">
+        <SpliceTime xmlns="http://www.scte.org/schemas/35" ptsTime="0"></SpliceTime>
+      </TimeSignal>
+      <SegmentationDescriptor xmlns="http://www.scte.org/schemas/35" segmentationTypeId="55" segmentsExpected="3" segmentNum="2" segmentationDuration="5400000">
+        <SegmentationUpid xmlns="http://www.scte.org/schemas/35" segmentationUpidType="9">SIGNAL:%Base64GUID%</SegmentationUpid>
+      </SegmentationDescriptor>
+    </SpliceInfoSection>
+  </SignalPointInsertion>
+  <SignalPointReplacement xmlns="urn:scte:224:action">
+    <SpliceInfoSection xmlns="http://www.scte.org/schemas/35" offset="PT1M">
+      <TimeSignal xmlns="http://www.scte.org/schemas/35">
+        <SpliceTime xmlns="http://www.scte.org/schemas/35" ptsTime="0"></SpliceTime>
+      </TimeSignal>
+      <SegmentationDescriptor xmlns="http://www.scte.org/schemas/35" segmentationTypeId="54" segmentsExpected="3" segmentNum="2" segmentationDuration="5400000">
+        <SegmentationUpid xmlns="http://www.scte.org/schemas/35" segmentationUpidType="9">SIGNAL:%Base64GUID%</SegmentationUpid>
+        <SegmentationUpid xmlns="http://www.scte.org/schemas/35" segmentationUpidType="15">urn:comcast:altcon:airdate:1651078800</SegmentationUpid>
+      </SegmentationDescriptor>
+    </SpliceInfoSection>
+  </SignalPointReplacement>
+</ViewingPolicy>`
+
 // Same as "vp2020Raw" but without the additional "Allocation" action
 const vp2018Raw string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="test/program" description="test program" lastUpdated="2021-01-19T18:49:26.298986528Z">
     <Content xmlns="urn:scte:224:action">CONTENT</Content>

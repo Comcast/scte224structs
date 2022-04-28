@@ -96,6 +96,18 @@ func (vp *ViewingPolicy) Get2018() scte224_2018.ViewingPolicy {
 		destination.SignalPointInsertion = &scte224_2018.SignalPointInsertionAction{
 			SignalPoints: signalPoints2018,
 		}
+
+		vpActionProps2018 := make([]scte224_2018.Any, 0, len(vp.SignalPointInsertion.ActionProperty))
+		for _, vpActionProp := range vp.SignalPointInsertion.ActionProperty {
+			vpActionProps2018 = append(vpActionProps2018, scte224_2018.Any{
+				XMLName:    vpActionProp.XMLName,
+				Namespace:  scte224_2018.NamespaceCleaner(vpActionProp.Namespace),
+				Attributes: vpActionProp.Attributes,
+				Value:      vpActionProp.Value,
+			})
+		}
+
+		destination.SignalPointInsertion.ActionProperty = vpActionProps2018
 	}
 
 	if vp.Content != nil {
@@ -174,7 +186,8 @@ type SignalPointDeletionAction struct {
 }
 
 type SignalPointInsertionAction struct {
-	SignalPoints []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
+	SignalPoints   []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
+	ActionProperty []Any          `xml:",any" json:"actionProperty,omitempty"`
 }
 
 type SignalPoint struct {
