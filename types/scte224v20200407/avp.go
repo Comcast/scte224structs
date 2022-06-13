@@ -95,6 +95,7 @@ func (vp *ViewingPolicy) Get2018() scte224_2018.ViewingPolicy {
 
 		destination.SignalPointInsertion = &scte224_2018.SignalPointInsertionAction{
 			SignalPoints: signalPoints2018,
+			Offset:       scte224_2018.Duration(vp.SignalPointInsertion.Offset),
 		}
 
 		vpActionProps2018 := make([]scte224_2018.Any, 0, len(vp.SignalPointInsertion.ActionProperty))
@@ -188,6 +189,7 @@ type SignalPointDeletionAction struct {
 type SignalPointInsertionAction struct {
 	SignalPoints   []*SignalPoint `xml:"urn:scte:224:action SignalPoint,omitempty" json:"signalPoint,omitempty"`
 	ActionProperty []Any          `xml:",any" json:"actionProperty,omitempty"`
+	Offset         Duration       `xml:"offset,attr,omitempty" json:"offset,omitempty"`
 }
 
 type SignalPoint struct {
