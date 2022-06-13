@@ -25,7 +25,7 @@ const vp2020Raw string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224"
 
 const vpSignalPointInsertion_w_SpliceInfoSection string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="test.com/viewingpolicy/test/testVP1" description="Test VP with SignalPointInsertion containing a SpliceInfoSection" lastUpdated="2022-04-27T22:09:55Z">
   <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="test.com/audience/test/testaudience"></Audience>
-  <SignalPointInsertion xmlns="urn:scte:224:action">
+  <SignalPointInsertion xmlns="urn:scte:224:action" offset="PT1M">
     <SpliceInfoSection xmlns="http://www.scte.org/schemas/35" offset="PT1M">
       <TimeSignal xmlns="http://www.scte.org/schemas/35">
         <SpliceTime xmlns="http://www.scte.org/schemas/35" ptsTime="0"></SpliceTime>
