@@ -48,6 +48,13 @@ const vpSignalPointInsertion_w_SpliceInfoSection string = `<ViewingPolicy xmlns=
   </SignalPointReplacement>
 </ViewingPolicy>`
 
+const vpPPOStart string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="evertz/viewingpolicy/37/GETTV/GET_COM202395/ppostart" description="GET_COM202395 PPO viewing policy start" lastUpdated="2024-01-31T23:52:34.266Z">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="evertz/audience/GETTV/all"></Audience>
+  <SignalPointInsertion xmlns="urn:scte:224:action">
+    <SignalPoint xmlns="urn:scte:224:action" segmentationEventId="123456" segmentationTypeId="52"></SignalPoint>
+  </SignalPointInsertion>
+</ViewingPolicy>`
+
 // Same as "vp2020Raw" but without the additional "Allocation" action
 const vp2018Raw string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="test/program" description="test program" lastUpdated="2021-01-19T18:49:26.298986528Z">
     <Content xmlns="urn:scte:224:action">CONTENT</Content>
