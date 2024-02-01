@@ -133,6 +133,13 @@ const spi string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="n
   </SignalPointInsertion>
 </ViewingPolicy>`
 
+const vpPPOStart string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="evertz/viewingpolicy/37/GETTV/GET_COM202395/ppostart" description="GET_COM202395 PPO viewing policy start" lastUpdated="2024-01-31T23:52:34.266Z">
+  <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="evertz/audience/GETTV/all"></Audience>
+  <SignalPointInsertion xmlns="urn:scte:224:action">
+    <SignalPoint xmlns="urn:scte:224:action" segmentationEventId="123456" segmentationTypeId="52"></SignalPoint>
+  </SignalPointInsertion>
+</ViewingPolicy>`
+
 const spd string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="deletion" description="Program MASE_ID ViewingPolicy" lastUpdated="2020-02-27T11:15:08.770408-08:00">
   <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="nbcuni.com/audience/CH61"></Audience>
   <SignalPointDeletion xmlns="urn:scte:224:action">True</SignalPointDeletion>
@@ -252,6 +259,65 @@ func TestSignalPointInsertion(t *testing.T) {
 				totalRepeatTime := sp.RepeatStop.Sub(*sp.RepeatStart)
 				if time.Minute*15 != totalRepeatTime {
 					t.Error("expected repeats to last 15 minutes rather than", totalRepeatTime)
+				}
+			}
+		}
+		roundtrip, rerr := xml.MarshalIndent(vpol, "", "  ")
+		if nil != rerr {
+			t.Error(rerr)
+		} else {
+			t.Log(string(roundtrip))
+		}
+	}
+}
+
+func TestSignalPointInsertion_PPOStart(t *testing.T) {
+	var vpol *ViewingPolicy
+	err := xml.Unmarshal([]byte(vpPPOStart), &vpol)
+	if err != nil {
+		t.Errorf("Error unmarshalling viewingpolicys %v", err)
+		t.FailNow()
+	}
+	action := vpol.SignalPointInsertion
+	if nil == action {
+		t.Error("expected non-nil signalPointInsertion")
+	} else {
+		if len(action.SignalPoints) == 0 {
+			t.Error("expected SignalPoints")
+		} else {
+			sp := action.SignalPoints[0]
+			if nil == sp {
+				t.Error("expected non-nil signalPoint")
+			} else {
+				if sp.Offset.GoDuration() != 0 {
+					t.Error("expected zero offset rather than" + sp.Offset)
+				}
+
+				if sp.SegmentationEventId != "123456" {
+					t.Errorf("expected segmentationEventId of \"123456\" rather than \"%s\"", sp.SegmentationEventId)
+				}
+				if nil != sp.SegmentationUpidType {
+					t.Error("expected nil SegmentationUpid")
+				}
+				if len(sp.SegmentationUpid) != 0 {
+					t.Error("expected empty SegmentationUpid")
+				}
+				if nil != sp.SegmentationTypeId {
+					if *sp.SegmentationTypeId != 52 {
+						t.Error("expected segmentationTypeId of 53 rather than", *sp.SegmentationTypeId)
+					}
+				} else {
+					t.Error("expected non-nil segmentationTypeId")
+				}
+				repeatInterval := sp.RepeatInterval.GoDuration()
+				if time.Second*0 != repeatInterval {
+					t.Error("expected a 0 second interval rather than", repeatInterval)
+				}
+				if nil != sp.RepeatStart {
+					t.Error("expected nil RepeatStart")
+				}
+				if nil != sp.RepeatStop {
+					t.Error("expected nil RepeatStop")
 				}
 			}
 		}
