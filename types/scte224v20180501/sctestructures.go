@@ -228,6 +228,7 @@ type SignalPointInsertionAction struct {
 
 type SignalPoint struct {
 	Offset               Duration   `xml:"offset,attr,omitempty" json:"offset,omitempty"`
+	SegmentationEventId  string     `xml:"segmentationEventId,attr,omitempty" json:"segmentationEventId,omitempty"`
 	SegmentationTypeId   *uint      `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
 	SegmentationUpidType *uint      `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
 	SegmentationUpid     string     `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
