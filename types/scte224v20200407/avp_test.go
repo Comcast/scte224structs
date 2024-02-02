@@ -35,6 +35,23 @@ func TestViewingPolicyDowngrade_w_SIS(t *testing.T) {
 	assert.EqualValues(t, vpSignalPointInsertion_w_SpliceInfoSection, string(vp2018Marshaled), "Downgrade failed")
 }
 
+func TestUnmarhalViewingPolicy_PPOStart(t *testing.T) {
+	var vp *ViewingPolicy
+	err := xml.Unmarshal([]byte(vpPPOStart), &vp)
+	assert.Nil(t, err, "Error unmarshalling viewingpolicy")
+}
+
+func TestViewingPolicyDowngrade_PPOStart(t *testing.T) {
+	var vp *ViewingPolicy
+	err := xml.Unmarshal([]byte(vpPPOStart), &vp)
+	assert.Nil(t, err, "Error unmarshalling viewingpolicy")
+
+	vp2018 := vp.Get2018()
+	vp2018Marshaled, err := xml.MarshalIndent(vp2018, "", "  ")
+	assert.Nil(t, err, "Error marshaling downgraded viewingpolicy")
+	assert.EqualValues(t, vpPPOStart, string(vp2018Marshaled), "Downgrade failed")
+}
+
 func TestAudienceDowngrade(t *testing.T) {
 	var aud Audience
 	err := xml.Unmarshal([]byte(aud2020Raw), &aud)

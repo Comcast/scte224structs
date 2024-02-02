@@ -84,6 +84,7 @@ func (vp *ViewingPolicy) Get2018() scte224_2018.ViewingPolicy {
 
 			signalPoints2018 = append(signalPoints2018, &scte224_2018.SignalPoint{
 				Offset:               scte224_2018.Duration(signalPoint.Offset),
+				SegmentationEventId:  signalPoint.SegmentationEventId,
 				SegmentationTypeId:   signalPoint.SegmentationTypeId,
 				SegmentationUpidType: signalPoint.SegmentationUpidType,
 				SegmentationUpid:     signalPoint.SegmentationUpid,
@@ -194,6 +195,7 @@ type SignalPointInsertionAction struct {
 
 type SignalPoint struct {
 	Offset               Duration   `xml:"offset,attr,omitempty" json:"offset,omitempty"`
+	SegmentationEventId  string     `xml:"segmentationEventId,attr,omitempty" json:"segmentationEventId,omitempty"`
 	SegmentationTypeId   *uint      `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
 	SegmentationUpidType *uint      `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
 	SegmentationUpid     string     `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
