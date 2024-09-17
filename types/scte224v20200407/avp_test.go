@@ -39,6 +39,7 @@ func TestUnmarhalViewingPolicy_PPOStart(t *testing.T) {
 	var vp *ViewingPolicy
 	err := xml.Unmarshal([]byte(vpPPOStart), &vp)
 	assert.Nil(t, err, "Error unmarshalling viewingpolicy")
+	assert.Equal(t, int64(27000000), vp.SignalPointInsertion.SignalPoints[0].SegmentationDuration)
 }
 
 func TestViewingPolicyDowngrade_PPOStart(t *testing.T) {

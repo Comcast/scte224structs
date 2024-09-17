@@ -136,7 +136,7 @@ const spi string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="n
 const vpPPOStart string = `<ViewingPolicy xmlns="http://www.scte.org/schemas/224" id="evertz/viewingpolicy/37/GETTV/GET_COM202395/ppostart" description="GET_COM202395 PPO viewing policy start" lastUpdated="2024-01-31T23:52:34.266Z">
   <Audience xmlns="http://www.scte.org/schemas/224" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="evertz/audience/GETTV/all"></Audience>
   <SignalPointInsertion xmlns="urn:scte:224:action">
-    <SignalPoint xmlns="urn:scte:224:action" segmentationEventId="123456" segmentationTypeId="52"></SignalPoint>
+    <SignalPoint xmlns="urn:scte:224:action" segmentationEventId="123456" segmentationDuration="27000000" segmentationTypeId="52"></SignalPoint>
   </SignalPointInsertion>
 </ViewingPolicy>`
 
@@ -296,6 +296,9 @@ func TestSignalPointInsertion_PPOStart(t *testing.T) {
 				if sp.SegmentationEventId != "123456" {
 					t.Errorf("expected segmentationEventId of \"123456\" rather than \"%s\"", sp.SegmentationEventId)
 				}
+                                if sp.SegmentationDuration != 27000000 {
+                                        t.Errorf("expected SegmentationDuration of 27000000 rather than %d", sp.SegmentationDuration)
+                                }
 				if nil != sp.SegmentationUpidType {
 					t.Error("expected nil SegmentationUpid")
 				}

@@ -85,6 +85,7 @@ func (vp *ViewingPolicy) Get2018() scte224_2018.ViewingPolicy {
 			signalPoints2018 = append(signalPoints2018, &scte224_2018.SignalPoint{
 				Offset:               scte224_2018.Duration(signalPoint.Offset),
 				SegmentationEventId:  signalPoint.SegmentationEventId,
+				SegmentationDuration: signalPoint.SegmentationDuration,
 				SegmentationTypeId:   signalPoint.SegmentationTypeId,
 				SegmentationUpidType: signalPoint.SegmentationUpidType,
 				SegmentationUpid:     signalPoint.SegmentationUpid,
@@ -161,7 +162,7 @@ type AdsReferenceId struct {
 }
 
 type SlotRules struct {
-	XMLName    xml.Name     `xml:"urn:scte:224:action SlotRules" json:"-"`
+	XMLName    xml.Name  `xml:"urn:scte:224:action SlotRules" json:"-"`
 	SlotRule []*SlotRule `xml:"SlotRule,omitempty" json:"SlotRule,omitempty"`
 }
 
@@ -196,6 +197,7 @@ type SignalPointInsertionAction struct {
 type SignalPoint struct {
 	Offset               Duration   `xml:"offset,attr,omitempty" json:"offset,omitempty"`
 	SegmentationEventId  string     `xml:"segmentationEventId,attr,omitempty" json:"segmentationEventId,omitempty"`
+	SegmentationDuration int64      `xml:"segmentationDuration,attr,omitempty" json:"segmentationDuration,omitempty"`
 	SegmentationTypeId   *uint      `xml:"segmentationTypeId,attr,omitempty" json:"segmentationTypeId,omitempty"`
 	SegmentationUpidType *uint      `xml:"segmentationUpidType,attr,omitempty" json:"segmentationUpidType,omitempty"`
 	SegmentationUpid     string     `xml:"segmentationUpid,attr,omitempty" json:"segmentationUpid,omitempty"`
